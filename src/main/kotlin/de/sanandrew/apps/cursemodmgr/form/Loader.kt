@@ -2,9 +2,7 @@ package de.sanandrew.apps.cursemodmgr.form
 
 import de.sanandrew.apps.cursemodmgr.MainApp
 import de.sanandrew.apps.cursemodmgr.cstWindowFrame
-import de.sanandrew.apps.cursemodmgr.curseapi.AddOnLoader
-import de.sanandrew.apps.cursemodmgr.curseapi.CurseRestAPIIntf
-import de.sanandrew.apps.cursemodmgr.curseapi.ModLoaders
+import de.sanandrew.apps.cursemodmgr.curseapi.*
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
@@ -29,15 +27,8 @@ class Loader : View("CurseForge Mod Manager") {
             MainApp.closeApp(this)
         }
 
-        if(CurseRestAPIIntf.loadSession()) {
-
-        } else {
-            val login = Login()
-            login.openModal(StageStyle.UNDECORATED, block = true)
-            if( !login.loginOkay ) {
-                MainApp.closeApp(this)
-            }
-        }
+//        val packs = Packs()
+//        packs.openModal(StageStyle.UNDECORATED, block = true)
     }
 
     override val root = cstWindowFrame(this, vbox {
@@ -61,7 +52,9 @@ class Loader : View("CurseForge Mod Manager") {
                 thread {
                     progressLbl.set("Loading...")
                     Thread.sleep(500L)
-                    Platform.runLater { loadModLoaders() }
+                    Platform.runLater {
+                        CFAPI.load(::setProgress)
+                    }
                 }
             }
             alignment = Pos.CENTER
@@ -75,38 +68,45 @@ class Loader : View("CurseForge Mod Manager") {
         }
     }, true, true)
 
-    private fun loadModLoaders() {
-        this.progressLbl.set("Loading Modloader list...")
-        this.progressPerc.set(0.0)
-        this.progressDetails.set("0 B / 0 B")
-        ModLoaders.load({ readBytes, totalBytes ->
-            Platform.runLater {
-                this.progressPerc.set(-readBytes.toDouble() / totalBytes.toDouble() * 360.0)
-                this.progressDetails.set(String.format("%s / %s", readBytes.getStagedByteVal(), totalBytes.getStagedByteVal()))
-            }
-        }, {
-            Platform.runLater { loadAddons() }
-        })
+    private fun setProgress(rb: Long, tb: Long): Unit {
+        Platform.runLater {
+            this.progressPerc.set(-rb.toDouble() / tb.toDouble() * 360.0)
+            this.progressDetails.set(String.format("%s / %s", rb.getStagedByteVal(), tb.getStagedByteVal()))
+        }
     }
 
-    private fun loadAddons() {
-        this.progressLbl.set("Loading AddOn list...")
-        this.progressPerc.set(0.0)
-        this.progressDetails.set("0 B / 0 B")
-        AddOnLoader.load({ readBytes, totalBytes ->
-            Platform.runLater {
-                this.progressPerc.set(-readBytes.toDouble() / totalBytes.toDouble() * 360.0)
-                this.progressDetails.set(String.format("%s / %s", readBytes.getStagedByteVal(), totalBytes.getStagedByteVal()))
-            }
-        }, {
-            Platform.runLater {
-                this.progressLbl.set("Done")
-                this.progressDetails.set("")
-            }
-            Thread.sleep(500L)
-            Platform.runLater { replaceWith(Packs::class) }
-        })
-    }
+//    private fun loadModLoaders() {
+////        this.progressLbl.set("Loading Modloader list...")
+////        this.progressPerc.set(0.0)
+////        this.progressDetails.set("0 B / 0 B")
+////        ModLoaders.load({ readBytes, totalBytes ->
+////            Platform.runLater {
+////                this.progressPerc.set(-readBytes.toDouble() / totalBytes.toDouble() * 360.0)
+////                this.progressDetails.set(String.format("%s / %s", readBytes.getStagedByteVal(), totalBytes.getStagedByteVal()))
+////            }
+////        }, {
+////            Platform.runLater { loadAddons() }
+////        })
+//    }
+//
+//    private fun loadAddons() {
+//        this.progressLbl.set("Loading AddOn list...")
+//        this.progressPerc.set(0.0)
+//        this.progressDetails.set("0 B / 0 B")
+//        AddOnLoader.load({ readBytes, totalBytes ->
+//            Platform.runLater {
+//                this.progressPerc.set(-readBytes.toDouble() / totalBytes.toDouble() * 360.0)
+//                this.progressDetails.set(String.format("%s / %s", readBytes.getStagedByteVal(), totalBytes.getStagedByteVal()))
+//            }
+//        }, {
+//            Platform.runLater {
+//                this.progressLbl.set("Done")
+//                this.progressDetails.set("")
+//            }
+//            Thread.sleep(500L)
+//            Platform.runLater { replaceWith(Packs::class) }
+//        })
+//    }
 
     private fun Long.getStagedByteVal(): String {
         val kb = 1024

@@ -1,4 +1,4 @@
-package de.sanandrew.apps.cursemodmgr.form
+package de.sanandrew.apps.cursemodmgr.pack
 
 import de.sanandrew.apps.cursemodmgr.MainApp
 import de.sanandrew.apps.cursemodmgr.css.CssPacksList
@@ -80,7 +80,7 @@ class Packs: View("CurseForge Mod Manager") {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
         effectProperty().bind(wndEffect)
-    }, true, true)
+    }, hasMinBtn = true, hasMaxRstBtn = true)
 
     private fun addNewPackPane(pack: Modpacks.Modpack) {
         this.mainPane.children.add(0,

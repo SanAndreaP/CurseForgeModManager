@@ -2,3 +2,4 @@
 out/
 session_data.json
 packs.json
+.gradle/
