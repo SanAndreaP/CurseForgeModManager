@@ -10,6 +10,7 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import tornadofx.*
+import kotlin.system.exitProcess
 
 class MainApp: tornadofx.App(Loader::class) {
     companion object {
@@ -18,7 +19,7 @@ class MainApp: tornadofx.App(Loader::class) {
 
             view.onUndock()
             Platform.exit()
-            System.exit(0)
+            exitProcess(0)
         }
 
         fun maximizeApp(view: UIComponent) {
@@ -26,7 +27,7 @@ class MainApp: tornadofx.App(Loader::class) {
             stage.isMaximized = true
 
             val screens = Screen.getScreensForRectangle(stage.x, stage.y, stage.x, stage.y)
-            val bounds = screens.getOrElse(0, { _ -> Screen.getPrimary() }).visualBounds
+            val bounds = screens.getOrElse(0) { Screen.getPrimary() }.visualBounds
 
             stage.x = bounds.minX
             stage.y = bounds.minY
@@ -65,11 +66,11 @@ class MainApp: tornadofx.App(Loader::class) {
             }
         }
 
-        fun centerOnScreen(view: UIComponent) {
+        private fun centerOnScreen(view: UIComponent) {
             val stage = currStage(view)
 
             val screens = Screen.getScreensForRectangle(stage.x, stage.y, stage.x, stage.y)
-            val bounds = screens.getOrElse(0, { _ -> Screen.getPrimary() }).visualBounds
+            val bounds = screens.getOrElse(0) { Screen.getPrimary() }.visualBounds
 
             stage.x = (bounds.width - stage.width) / 2.0
             stage.y = (bounds.height - stage.height) / 3.0

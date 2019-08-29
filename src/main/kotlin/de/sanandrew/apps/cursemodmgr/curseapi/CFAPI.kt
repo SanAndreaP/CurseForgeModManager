@@ -1,20 +1,23 @@
 package de.sanandrew.apps.cursemodmgr.curseapi
 
-import com.github.kittinunf.fuel.core.Response
-import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
+import de.sanandrew.apps.cursemodmgr.GsonInst
 
 object CFAPI {
-    public lateinit var Minecraft: Game
+    lateinit var Minecraft: Game
 
-    private val minecraftId = 432
+    private val minecraftId = 432L
 
-    public fun load(dlProgressHandler: (Long, Long) -> Unit) {
+    fun load(dlProgressHandler: (Long, Long, String) -> Unit) {
         "https://addons-ecs.forgesvc.net/api/v2/game"
                 .httpGet(listOf(Pair("supportsAddons", true)))
-                .responseProgress(dlProgressHandler)
+                .responseProgress {rb, tb -> dlProgressHandler(rb, tb, "Gamelist")}
                 .responseString {_, _, result ->
-                    println(result.get())
+                    val games = GsonInst.fromJson(result.get(), Array<Game>::class.java)
+                    Minecraft = games.first { gm -> gm.id == minecraftId }
+                    Minecraft.loadGameVersions(dlProgressHandler, {
+                        println("yay")
+                    })
                 }
     }
 }

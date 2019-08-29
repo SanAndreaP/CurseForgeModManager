@@ -11,7 +11,6 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.shape.ArcType
 import javafx.scene.text.Font
-import javafx.stage.StageStyle
 import tornadofx.*
 import kotlin.concurrent.thread
 
@@ -66,12 +65,13 @@ class Loader : View("CurseForge Mod Manager") {
             maxWidth = Double.MAX_VALUE
             vgrow = Priority.ALWAYS
         }
-    }, true, true)
+    }, hasMinBtn = true, hasMaxRstBtn = true)
 
-    private fun setProgress(rb: Long, tb: Long): Unit {
+    private fun setProgress(rb: Long, tb: Long, lbl: String) {
         Platform.runLater {
+            this.progressLbl.set("Loading $lbl...")
             this.progressPerc.set(-rb.toDouble() / tb.toDouble() * 360.0)
-            this.progressDetails.set(String.format("%s / %s", rb.getStagedByteVal(), tb.getStagedByteVal()))
+            this.progressDetails.set(if( tb > 0 ) String.format("%s / %s", rb.getStagedByteVal(), tb.getStagedByteVal()) else rb.getStagedByteVal())
         }
     }
 

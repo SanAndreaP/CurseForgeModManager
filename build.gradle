@@ -39,8 +39,8 @@ compileKotlin {
 idea.project.settings {
     runConfigurations {
         "MainApp"(Application) {
-            mainClass = "de.sanandrew.apps.cursemodmgr.MainApp"
-            moduleName = getProject().idea.module.name
+            mainClass = "de.sanandrew.apps.cursemodmgr.MainKt"
+            moduleName = getProject().idea.module.name + ".main"
         }
     }
 }
