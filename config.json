@@ -1,14 +1,14 @@
 {
   "isMaximized": {
     "default": false,
-    "value": true
+    "value": false
   },
   "windowSizeX": {
     "default": 800,
-    "value": 1920
+    "value": 800
   },
   "windowSizeY": {
     "default": 600,
-    "value": 1080
+    "value": 600
   }
 }

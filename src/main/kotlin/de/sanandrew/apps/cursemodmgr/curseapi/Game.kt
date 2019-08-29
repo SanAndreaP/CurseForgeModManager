@@ -11,18 +11,11 @@ data class Game(val id: Long, val name: String, val slug: String, val categorySe
         other as Game
 
         if (id != other.id) return false
-        if (name != other.name) return false
-        if (slug != other.slug) return false
-        if (!categorySections.contentEquals(other.categorySections)) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + slug.hashCode()
-        result = 31 * result + categorySections.contentHashCode()
-        return result
+        return id.hashCode()
     }
 }
