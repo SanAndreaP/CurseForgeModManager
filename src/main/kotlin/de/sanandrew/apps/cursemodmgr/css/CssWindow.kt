@@ -13,6 +13,8 @@ class CssWindow : Stylesheet() {
         val minBtn by cssclass("minBtn")
         val resBtn by cssclass("resBtn")
         val maxBtn by cssclass("maxBtn")
+        val progressCircle by cssclass("progressCircle")
+        val progressArc by cssclass("progressArc")
     }
     init {
         windowBg {

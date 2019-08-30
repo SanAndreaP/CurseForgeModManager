@@ -1,12 +1,12 @@
 package de.sanandrew.apps.cursemodmgr.pack
 
-import de.sanandrew.apps.cursemodmgr.cstWindowFrame
-import de.sanandrew.apps.cursemodmgr.curseapi.ModLoaders
-import de.sanandrew.apps.cursemodmgr.getCellCallback
-import de.sanandrew.apps.cursemodmgr.getConverter
-import de.sanandrew.apps.cursemodmgr.getImgFromBase64GZip
-import de.sanandrew.apps.cursemodmgr.util.SemVer
-import de.sanandrew.apps.cursemodmgr.writeImgToBase64GZip
+import de.sanandrew.apps.cursemodmgr.util.cstWindowFrame
+import de.sanandrew.apps.cursemodmgr.curseapi.CFAPI
+import de.sanandrew.apps.cursemodmgr.curseapi.Game
+import de.sanandrew.apps.cursemodmgr.util.getCellCallback
+import de.sanandrew.apps.cursemodmgr.util.getConverter
+import de.sanandrew.apps.cursemodmgr.util.getImgFromBase64GZip
+import de.sanandrew.apps.cursemodmgr.util.writeImgToBase64GZip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.transformation.FilteredList
 import javafx.geometry.HPos
@@ -25,25 +25,25 @@ import tornadofx.*
 import java.io.File
 
 class PackDialog constructor(): Fragment("New Modpack") {
-    var pack: Modpacks.Modpack? = null
+    var pack: MinecraftModpacks.Modpack? = null
 
     private val stdImage = Image("/add_image.png")
     private val packTitle = SimpleObjectProperty<String>()
-    private val packGameVer = SimpleObjectProperty<SemVer>()
-    private val packLoader = SimpleObjectProperty<ModLoaders.ModLoader>()
+    private val packGameVer = SimpleObjectProperty<Game.GameVersion>()
+    private val packLoader = SimpleObjectProperty<Game.Modloader>()
     private val packMcDir = SimpleObjectProperty<String>()
     private val packProfDir = SimpleObjectProperty<String>()
     private val packImg = SimpleObjectProperty<Image>(stdImage)
 
-    private val filteredLoaders = FilteredList<ModLoaders.ModLoader>(ModLoaders.loaderList.loaders.observable())
+    private val filteredLoaders = FilteredList<Game.Modloader>(CFAPI.Minecraft.modloader.toList().observable())
     private val errMsg = SimpleObjectProperty<String?>()
 
-    constructor(pack: Modpacks.Modpack): this() {
+    constructor(pack: MinecraftModpacks.Modpack): this() {
         this.title = "Edit Modpack - " + pack.title
         this.pack = pack
 
         this.packTitle.set(pack.title)
-        this.packGameVer.set(SemVer.getMcVer(pack.modLoader.GameVersion))
+        this.packGameVer.set(pack.modLoader.getGameVersion(CFAPI.Minecraft))
         this.packLoader.set(pack.modLoader)
         this.packMcDir.set(pack.mcDirectory)
         this.packProfDir.set(pack.profileDirectory)
@@ -96,13 +96,13 @@ class PackDialog constructor(): Fragment("New Modpack") {
         }
         row {
             label("Game Version")
-            combobox(packGameVer, ModLoaders.gameVersions) {
+            combobox<Game.GameVersion>(packGameVer, CFAPI.Minecraft.versions.toList()) {
                 valueProperty().addListener { _, _, v ->
-                    filteredLoaders.setPredicate { e -> SemVer.getMcVer(e.GameVersion) == v }
+                    filteredLoaders.setPredicate { e -> v == e.getGameVersion(CFAPI.Minecraft) }
                 }
 
-                cellFactory = getCellCallback { obj -> obj.getMcVerString() }
-                converter = de.sanandrew.apps.cursemodmgr.getConverter<SemVer?> { obj -> obj?.getMcVerString() ?: "" }
+                cellFactory = getCellCallback { obj -> obj.versionString }
+                converter = getConverter<Game.GameVersion?> { obj -> obj?.versionString ?: "" }
 
                 gridpaneConstraints {
                     columnSpan = 2
@@ -112,11 +112,11 @@ class PackDialog constructor(): Fragment("New Modpack") {
         }
         row {
             label("Modloader")
-            combobox<ModLoaders.ModLoader>(packLoader, filteredLoaders) {
+            combobox<Game.Modloader>(packLoader, filteredLoaders) {
                 disableProperty().bind(packGameVer.isNull)
 
-                cellFactory = getCellCallback { obj -> obj.Name }
-                converter = getConverter<ModLoaders.ModLoader?> { obj -> obj?.Name ?: "" }
+                cellFactory = getCellCallback { obj -> obj.name }
+                converter = getConverter<Game.Modloader?> { obj -> obj?.name ?: "" }
 
                 gridpaneConstraints {
                     columnSpan = 2
@@ -134,7 +134,10 @@ class PackDialog constructor(): Fragment("New Modpack") {
                     if( getStringPropValue(packMcDir) != "" ) {
                         dc.initialDirectory = File(packMcDir.value)
                     }
-                    packMcDir.set(dc.showDialog(currentWindow).absolutePath)
+                    val res: File? = dc.showDialog(currentWindow)
+                    if( res != null ) {
+                        packMcDir.set(res.absolutePath)
+                    }
                 }
             }
             rowConstraints += RowConstraints(30.0)
@@ -151,14 +154,17 @@ class PackDialog constructor(): Fragment("New Modpack") {
                     } else if( getStringPropValue(packMcDir) != "" ) {
                         dc.initialDirectory = File(packMcDir.value)
                     }
-                    packProfDir.set(dc.showDialog(currentWindow).absolutePath)
+                    val res: File? = dc.showDialog(currentWindow)
+                    if( res != null ) {
+                        packProfDir.set(res.absolutePath)
+                    }
                 }
             }
             rowConstraints += RowConstraints(30.0)
         }
         row {
             label(errMsg) {
-                visibleProperty().bind(errMsg.isNotNull)
+                visibleWhen(errMsg.isNotNull)
                 style {
                     textFill = Color.FIREBRICK
                 }
@@ -209,10 +215,10 @@ class PackDialog constructor(): Fragment("New Modpack") {
                 pack!!.profileDirectory = getStringPropValue(packProfDir)
                 if( packImg != stdImage ) {
                     val (width, height, data) = writeImgToBase64GZip(packImg.value)
-                    pack!!.img = Modpacks.PackImg(width, height, data)
+                    pack!!.img = MinecraftModpacks.PackImg(width, height, data)
                 }
             } else {
-                pack = Modpacks.Modpack(packTitle.value, packLoader.value, getStringPropValue(packMcDir), getStringPropValue(packProfDir), null)
+                pack = MinecraftModpacks.Modpack(packTitle.value, packLoader.value, getStringPropValue(packMcDir), getStringPropValue(packProfDir), null)
             }
             close()
         }

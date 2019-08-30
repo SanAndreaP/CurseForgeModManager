@@ -1,9 +1,8 @@
 package de.sanandrew.apps.cursemodmgr.css.color
 
-import de.sanandrew.apps.cursemodmgr.css.CssMain
-import de.sanandrew.apps.cursemodmgr.css.CssPacksList
+import de.sanandrew.apps.cursemodmgr.css.CssPacks
 import de.sanandrew.apps.cursemodmgr.css.CssWindow
-import de.sanandrew.apps.cursemodmgr.newColor
+import de.sanandrew.apps.cursemodmgr.util.newColor
 import javafx.scene.effect.BlurType
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
@@ -88,12 +87,18 @@ class CssLightSteelblue : Stylesheet() {
                 effect = DropShadow(BlurType.ONE_PASS_BOX, Color.BLACK, 2.0, 1.0, 0.0, 0.0)
             }
         }
+        CssWindow.progressCircle {
+            stroke = steelblue.desaturate()
+        }
+        CssWindow.progressArc {
+            fill = steelblue
+        }
 
 
-        CssPacksList.packsArea {
+        CssPacks.packsArea {
             borderColor += box(steelblue)
         }
-        CssPacksList.packPane {
+        CssPacks.packPane {
             backgroundColor += whiteSteelblue
             effect = DropShadow(5.0, steelblue)
             borderColor += box(steelblue)
@@ -101,7 +106,7 @@ class CssLightSteelblue : Stylesheet() {
                 borderColor += box(steelblue)
             }
         }
-        CssPacksList.newPackPane {
+        CssPacks.newPackPane {
             backgroundColor += Color.LIGHTGRAY
             effect = DropShadow(5.0, Color.GRAY)
         }

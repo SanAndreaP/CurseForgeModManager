@@ -1,10 +1,8 @@
 package de.sanandrew.apps.cursemodmgr.css
 
-import javafx.scene.effect.DropShadow
-import javafx.scene.paint.Color
 import tornadofx.*
 
-class CssPacksList: Stylesheet() {
+class CssPacks: Stylesheet() {
     companion object {
         val packsArea by cssclass("packsArea")
         val packPane by cssclass("packPane")

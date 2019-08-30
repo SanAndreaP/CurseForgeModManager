@@ -1,5 +1,6 @@
-package de.sanandrew.apps.cursemodmgr
+package de.sanandrew.apps.cursemodmgr.util
 
+import de.sanandrew.apps.cursemodmgr.MainApp
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos

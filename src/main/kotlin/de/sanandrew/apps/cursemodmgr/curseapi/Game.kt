@@ -2,12 +2,14 @@ package de.sanandrew.apps.cursemodmgr.curseapi
 
 import com.github.kittinunf.fuel.httpGet
 import de.sanandrew.apps.cursemodmgr.GsonInst
+import de.sanandrew.apps.cursemodmgr.util.SemVer
 
 data class Game(val id: Long,
                 val name: String,
                 val slug: String,
                 val categorySections: Array<CategorySection>,
-                var versions: Array<GameVersion> = arrayOf())
+                var versions: Array<GameVersion> = arrayOf(),
+                var modloader: Array<Modloader> = arrayOf())
 {
     data class CategorySection(val id: Long,
                                val name: String,
@@ -22,13 +24,45 @@ data class Game(val id: Long,
                            val versionString: String,
                            val jarDownloadUrl: String,
                            val jsonDownloadUrl: String)
+    {
+        override fun equals(other: Any?): Boolean {
+            if( other === this ) return true
+            if( other is String ) return this.versionString == other
+            if( other !is GameVersion ) return false
 
-    public fun loadGameVersions(dlProgressHandler: (Long, Long, String) -> Unit, onFinish: () -> Unit) {
+            return this.versionString == other.versionString
+        }
+
+        override fun hashCode(): Int {
+            return this.versionString.hashCode()
+        }
+    }
+    data class Modloader(val name: String,
+                         val gameVersion: String,
+                         val latest: Boolean,
+                         val recommended: Boolean)
+    {
+        fun getGameVersion(game: Game): GameVersion {
+            return game.versions.first { ver -> ver.versionString == this.gameVersion }
+        }
+    }
+
+    fun load(dlProgressHandler: (Long, Long, String) -> Unit, onFinish: () -> Unit) {
         "https://addons-ecs.forgesvc.net/api/v2/$slug/version"
                 .httpGet()
                 .responseProgress {rb, tb -> dlProgressHandler(rb, tb, "$name Versions")}
                 .responseString {_, _, result ->
                     this.versions = GsonInst.fromJson(result.get(), Array<GameVersion>::class.java)
+                    this.loadModLoaders(dlProgressHandler, onFinish)
+                }
+    }
+
+    private fun loadModLoaders(dlProgressHandler: (Long, Long, String) -> Unit, onFinish: () -> Unit) {
+        "https://addons-ecs.forgesvc.net/api/v2/$slug/modloader"
+                .httpGet()
+                .responseProgress {rb, tb -> dlProgressHandler(rb, tb, "$name Modloader")}
+                .responseString {_, _, result ->
+                    this.modloader = GsonInst.fromJson(result.get(), Array<Modloader>::class.java)
                     onFinish()
                 }
     }

@@ -1,13 +1,10 @@
 package de.sanandrew.apps.cursemodmgr.pack
 
 import de.sanandrew.apps.cursemodmgr.MainApp
-import de.sanandrew.apps.cursemodmgr.css.CssPacksList
 import de.sanandrew.apps.cursemodmgr.css.color.CssLightFirebrick
 import de.sanandrew.apps.cursemodmgr.css.color.CssLightSteelblue
-import de.sanandrew.apps.cursemodmgr.cstWindowFrame
-import de.sanandrew.apps.cursemodmgr.getImgFromBase64GZip
-import de.sanandrew.apps.cursemodmgr.pack.Modpacks
-import de.sanandrew.apps.cursemodmgr.pack.PackDialog
+import de.sanandrew.apps.cursemodmgr.util.cstWindowFrame
+import de.sanandrew.apps.cursemodmgr.util.getImgFromBase64GZip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -16,7 +13,6 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.control.Tooltip
 import javafx.scene.effect.BoxBlur
 import javafx.scene.effect.Effect
-import javafx.scene.image.Image
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Priority
 import javafx.scene.text.Font
@@ -29,7 +25,7 @@ class Packs: View("CurseForge Mod Manager") {
         hgap = 10.0
         vgap = 10.0
 
-        padding = Insets(10.0)
+        paddingAll = 10.0
 
         pane {
             addClass("newPackPane")
@@ -41,8 +37,8 @@ class Packs: View("CurseForge Mod Manager") {
                 if( event.button == MouseButton.PRIMARY ) {
                     val pack = openPackDialog()
                     if (pack != null) {
-                        Modpacks.packs.add(pack)
-                        Modpacks.savePacks()
+                        MinecraftModpacks.addPack(pack)
+                        MinecraftModpacks.savePacks()
                         addNewPackPane(pack)
                     }
                 } else {
@@ -55,10 +51,8 @@ class Packs: View("CurseForge Mod Manager") {
 
     init {
         MainApp.initWindow(this)
-        Modpacks.loadPacks()
-        for( pack in Modpacks.packs ) {
-            addNewPackPane(pack)
-        }
+        MinecraftModpacks.loadPacks()
+        MinecraftModpacks.getPacks().forEach(this::addNewPackPane)
     }
 
     override val root = cstWindowFrame(this, vbox {
@@ -82,12 +76,12 @@ class Packs: View("CurseForge Mod Manager") {
         effectProperty().bind(wndEffect)
     }, hasMinBtn = true, hasMaxRstBtn = true)
 
-    private fun addNewPackPane(pack: Modpacks.Modpack) {
+    private fun addNewPackPane(pack: MinecraftModpacks.Modpack) {
         this.mainPane.children.add(0,
             vbox {
                 addClass("packPane")
                 val packTitle = SimpleObjectProperty<String>(pack.title)
-                val packImg = SimpleObjectProperty<Image?>(if(pack.img != null) getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data) else null)
+                val packImg = SimpleObjectProperty(if(pack.img != null) getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data) else null)
 
                 setMinSize(120.0, 180.0)
                 stackpane {
@@ -114,6 +108,13 @@ class Packs: View("CurseForge Mod Manager") {
                         textOverrun = OverrunStyle.CLIP
                         padding = Insets(0.0, 0.0, 1.5, 0.0)
                         tooltip = Tooltip("Edit Pack")
+
+                        setOnMouseClicked {
+                            openPackDialog(pack)
+                            MinecraftModpacks.savePacks()
+                            packTitle.set(pack.title)
+                            packImg.set(if(pack.img != null) getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data) else null)
+                        }
                     }
                     button("\ue123") {
                         addClass("icoFont")
@@ -140,17 +141,11 @@ class Packs: View("CurseForge Mod Manager") {
                         tooltip = Tooltip("Show/Edit Modlist")
                     }
                 }
-                setOnMouseClicked {
-                    openPackDialog(pack)
-                    Modpacks.savePacks()
-                    packTitle.set(pack.title)
-                    packImg.set(if(pack.img != null) getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data) else null)
-                }
             }
         )
     }
 
-    private fun openPackDialog(pack: Modpacks.Modpack? = null): Modpacks.Modpack? {
+    private fun openPackDialog(pack: MinecraftModpacks.Modpack? = null): MinecraftModpacks.Modpack? {
         wndEffect.set(BoxBlur(5.0, 5.0, 3))
 
         val md = if(pack != null) PackDialog(pack) else PackDialog()

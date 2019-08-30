@@ -1,10 +1,11 @@
 package de.sanandrew.apps.cursemodmgr
 
 import de.sanandrew.apps.cursemodmgr.css.CssMain
-import de.sanandrew.apps.cursemodmgr.css.CssPacksList
+import de.sanandrew.apps.cursemodmgr.css.CssPacks
 import de.sanandrew.apps.cursemodmgr.css.CssWindow
-import de.sanandrew.apps.cursemodmgr.css.color.CssLightFirebrick
-import de.sanandrew.apps.cursemodmgr.form.Loader
+import de.sanandrew.apps.cursemodmgr.css.color.CssLightSteelblue
+import de.sanandrew.apps.cursemodmgr.util.Config
+import de.sanandrew.apps.cursemodmgr.util.currStage
 import javafx.application.Platform
 import javafx.stage.Screen
 import javafx.stage.Stage
@@ -78,10 +79,12 @@ class MainApp: tornadofx.App(Loader::class) {
     }
 
     init {
+        reloadViewsOnFocus()
+
         importStylesheet(CssMain::class)
         importStylesheet(CssWindow::class)
-        importStylesheet(CssPacksList::class)
-        importStylesheet(CssLightFirebrick::class)
+        importStylesheet(CssPacks::class)
+        importStylesheet(CssLightSteelblue::class)
     }
 
     override fun start(stage: Stage) {

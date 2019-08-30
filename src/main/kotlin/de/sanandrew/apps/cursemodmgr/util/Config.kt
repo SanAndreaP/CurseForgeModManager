@@ -1,5 +1,6 @@
-package de.sanandrew.apps.cursemodmgr
+package de.sanandrew.apps.cursemodmgr.util
 
+import de.sanandrew.apps.cursemodmgr.GsonInst
 import javafx.stage.Stage
 import java.io.File
 import java.io.FileReader

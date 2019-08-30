@@ -1,8 +1,8 @@
-package de.sanandrew.apps.cursemodmgr.form
+package de.sanandrew.apps.cursemodmgr
 
-import de.sanandrew.apps.cursemodmgr.MainApp
-import de.sanandrew.apps.cursemodmgr.cstWindowFrame
+import de.sanandrew.apps.cursemodmgr.util.cstWindowFrame
 import de.sanandrew.apps.cursemodmgr.curseapi.*
+import de.sanandrew.apps.cursemodmgr.pack.Packs
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
@@ -25,9 +25,6 @@ class Loader : View("CurseForge Mod Manager") {
         this.primaryStage.onCloseRequest = EventHandler {
             MainApp.closeApp(this)
         }
-
-//        val packs = Packs()
-//        packs.openModal(StageStyle.UNDECORATED, block = true)
     }
 
     override val root = cstWindowFrame(this, vbox {
@@ -36,23 +33,23 @@ class Loader : View("CurseForge Mod Manager") {
         }
         group {
             circle {
+                addClass("progressCircle")
                 radius = 22.0
                 fill = Color.WHITE
-                stroke = Color.FIREBRICK.desaturate()
                 strokeWidth = 2.0
             }
             arc {
+                addClass("progressArc")
                 startAngle = 90.0
                 lengthProperty().bind(progressPerc)
                 radiusX = 20.0
                 radiusY = 20.0
                 type = ArcType.ROUND
-                fill = Color.FIREBRICK
                 thread {
                     progressLbl.set("Loading...")
                     Thread.sleep(500L)
                     Platform.runLater {
-                        CFAPI.load(::setProgress)
+                        CFAPI.load(::setProgress) { Platform.runLater { replaceWith(Packs()) } }
                     }
                 }
             }
@@ -74,39 +71,6 @@ class Loader : View("CurseForge Mod Manager") {
             this.progressDetails.set(if( tb > 0 ) String.format("%s / %s", rb.getStagedByteVal(), tb.getStagedByteVal()) else rb.getStagedByteVal())
         }
     }
-
-//    private fun loadModLoaders() {
-////        this.progressLbl.set("Loading Modloader list...")
-////        this.progressPerc.set(0.0)
-////        this.progressDetails.set("0 B / 0 B")
-////        ModLoaders.load({ readBytes, totalBytes ->
-////            Platform.runLater {
-////                this.progressPerc.set(-readBytes.toDouble() / totalBytes.toDouble() * 360.0)
-////                this.progressDetails.set(String.format("%s / %s", readBytes.getStagedByteVal(), totalBytes.getStagedByteVal()))
-////            }
-////        }, {
-////            Platform.runLater { loadAddons() }
-////        })
-//    }
-//
-//    private fun loadAddons() {
-//        this.progressLbl.set("Loading AddOn list...")
-//        this.progressPerc.set(0.0)
-//        this.progressDetails.set("0 B / 0 B")
-//        AddOnLoader.load({ readBytes, totalBytes ->
-//            Platform.runLater {
-//                this.progressPerc.set(-readBytes.toDouble() / totalBytes.toDouble() * 360.0)
-//                this.progressDetails.set(String.format("%s / %s", readBytes.getStagedByteVal(), totalBytes.getStagedByteVal()))
-//            }
-//        }, {
-//            Platform.runLater {
-//                this.progressLbl.set("Done")
-//                this.progressDetails.set("")
-//            }
-//            Thread.sleep(500L)
-//            Platform.runLater { replaceWith(Packs::class) }
-//        })
-//    }
 
     private fun Long.getStagedByteVal(): String {
         val kb = 1024

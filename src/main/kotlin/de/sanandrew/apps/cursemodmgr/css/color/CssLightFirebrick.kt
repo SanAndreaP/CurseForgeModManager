@@ -1,9 +1,8 @@
 package de.sanandrew.apps.cursemodmgr.css.color
 
-import de.sanandrew.apps.cursemodmgr.css.CssMain
-import de.sanandrew.apps.cursemodmgr.css.CssPacksList
+import de.sanandrew.apps.cursemodmgr.css.CssPacks
 import de.sanandrew.apps.cursemodmgr.css.CssWindow
-import de.sanandrew.apps.cursemodmgr.newColor
+import de.sanandrew.apps.cursemodmgr.util.newColor
 import javafx.scene.effect.BlurType
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
@@ -63,7 +62,7 @@ class CssLightFirebrick: Stylesheet() {
 
         CssWindow.windowBg {
             effect = DropShadow(2.0, firebrick)
-            borderColor += tornadofx.box(firebrick)
+            borderColor += box(firebrick)
         }
         CssWindow.windowContent {
             backgroundColor += Color.WHITESMOKE
@@ -74,7 +73,7 @@ class CssLightFirebrick: Stylesheet() {
                     Stop(0.4, lightFirebrick),
                     Stop(0.4, firebrick),
                     Stop(1.0, darkFirebrick))
-            borderColor += tornadofx.box(firebrick)
+            borderColor += box(firebrick)
             button {
                 and(CssWindow.minBtn, CssWindow.maxBtn, CssWindow.resBtn) {
                     and(hover) {
@@ -88,20 +87,26 @@ class CssLightFirebrick: Stylesheet() {
                 effect = DropShadow(BlurType.ONE_PASS_BOX, Color.BLACK, 2.0, 1.0, 0.0, 0.0)
             }
         }
-
-
-        CssPacksList.packsArea {
-            borderColor += tornadofx.box(firebrick)
+        CssWindow.progressCircle {
+            stroke = Color.FIREBRICK.desaturate()
         }
-        CssPacksList.packPane {
+        CssWindow.progressArc {
+            fill = Color.FIREBRICK
+        }
+
+
+        CssPacks.packsArea {
+            borderColor += box(firebrick)
+        }
+        CssPacks.packPane {
             backgroundColor += whiteFirebrick
             effect = DropShadow(5.0, firebrick)
-            borderColor += tornadofx.box(firebrick)
+            borderColor += box(firebrick)
             label {
                 borderColor += box(firebrick)
             }
         }
-        CssPacksList.newPackPane {
+        CssPacks.newPackPane {
             backgroundColor += Color.LIGHTGRAY
             effect = DropShadow(5.0, Color.GRAY)
         }
