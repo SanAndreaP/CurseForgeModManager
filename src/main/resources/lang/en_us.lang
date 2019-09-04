@@ -1,4 +1,10 @@
 langname=English (USA)
 
 title=CurseForge Mod Manager
-loading=Loading %s
+load.loading=Loading %s
+load.gamelist=game list
+load.versions=%s versions
+load.modloader=%s Modloader
+packs=Modpacks
+packs.new=new pack
+packs.edit=edit pack

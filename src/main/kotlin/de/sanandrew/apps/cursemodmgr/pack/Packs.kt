@@ -1,8 +1,7 @@
 package de.sanandrew.apps.cursemodmgr.pack
 
 import de.sanandrew.apps.cursemodmgr.MainApp
-import de.sanandrew.apps.cursemodmgr.css.color.CssLightFirebrick
-import de.sanandrew.apps.cursemodmgr.css.color.CssLightSteelblue
+import de.sanandrew.apps.cursemodmgr.util.I18n
 import de.sanandrew.apps.cursemodmgr.util.cstWindowFrame
 import de.sanandrew.apps.cursemodmgr.util.getImgFromBase64GZip
 import javafx.beans.property.SimpleObjectProperty
@@ -14,12 +13,16 @@ import javafx.scene.control.Tooltip
 import javafx.scene.effect.BoxBlur
 import javafx.scene.effect.Effect
 import javafx.scene.input.MouseButton
+import javafx.scene.layout.Background
+import javafx.scene.layout.BackgroundFill
+import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.StageStyle
 import tornadofx.*
 
-class Packs: View("CurseForge Mod Manager") {
+class Packs: View(I18n.translate("title")) {
     private val wndEffect = SimpleObjectProperty<Effect>()
     private val mainPane = flowpane {
         hgap = 10.0
@@ -31,8 +34,22 @@ class Packs: View("CurseForge Mod Manager") {
             addClass("newPackPane")
             setPrefSize(120.0, 180.0)
             hgrow = Priority.NEVER
-            label("+")
-            label("new pack")
+            vbox {
+                label("+") {
+                    style {
+                        fontSize = Dimension(20.0, Dimension.LinearUnits.pt)
+                    }
+                    alignment = Pos.CENTER
+                }
+                label("new pack") {
+                    alignment = Pos.CENTER
+                }
+                hgrow = Priority.ALWAYS
+                vgrow = Priority.ALWAYS
+                useMaxWidth = true
+                useMaxHeight = true
+                background = Background(BackgroundFill(Color(1.0, 1.0, 0.0, 1.0), CornerRadii.EMPTY, Insets.EMPTY))
+            }
             setOnMouseClicked { event ->
                 if( event.button == MouseButton.PRIMARY ) {
                     val pack = openPackDialog()
@@ -41,9 +58,6 @@ class Packs: View("CurseForge Mod Manager") {
                         MinecraftModpacks.savePacks()
                         addNewPackPane(pack)
                     }
-                } else {
-                    removeStylesheet(CssLightFirebrick::class)
-                    importStylesheet(CssLightSteelblue::class)
                 }
             }
         }
@@ -56,8 +70,10 @@ class Packs: View("CurseForge Mod Manager") {
     }
 
     override val root = cstWindowFrame(this, vbox {
-        label("Modpacks") {
-            font = Font.font(16.0)
+        label(I18n.translate("packs")) {
+            style {
+                fontSize = Dimension(15.0, Dimension.LinearUnits.pt)
+            }
         }
         scrollpane {
             vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED

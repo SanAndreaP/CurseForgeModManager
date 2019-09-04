@@ -3,6 +3,7 @@ package de.sanandrew.apps.cursemodmgr
 import de.sanandrew.apps.cursemodmgr.util.cstWindowFrame
 import de.sanandrew.apps.cursemodmgr.curseapi.*
 import de.sanandrew.apps.cursemodmgr.pack.Packs
+import de.sanandrew.apps.cursemodmgr.util.I18n
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
@@ -14,10 +15,14 @@ import javafx.scene.text.Font
 import tornadofx.*
 import kotlin.concurrent.thread
 
-class Loader : View("CurseForge Mod Manager") {
-    private val progressLbl = SimpleObjectProperty<String>("Loading...")
+class Loader : View(I18n.translate("title")) {
+    private val progressLbl = SimpleObjectProperty<String>(I18n.translate("load.loading", "..."))
     private val progressPerc = SimpleObjectProperty<Double>(0.0)
     private val progressDetails = SimpleObjectProperty<String>("")
+    companion object {
+        var progressPartsDone = 0
+        var progressPartsTotal = 0
+    }
 
     init {
         MainApp.initWindow(this)
@@ -28,7 +33,7 @@ class Loader : View("CurseForge Mod Manager") {
     }
 
     override val root = cstWindowFrame(this, vbox {
-        label(progressLbl) {
+        label(this@Loader.progressLbl) {
             font = Font.font(16.0)
         }
         group {
@@ -41,21 +46,25 @@ class Loader : View("CurseForge Mod Manager") {
             arc {
                 addClass("progressArc")
                 startAngle = 90.0
-                lengthProperty().bind(progressPerc)
+                lengthProperty().bind(this@Loader.progressPerc)
                 radiusX = 20.0
                 radiusY = 20.0
                 type = ArcType.ROUND
                 thread {
-                    progressLbl.set("Loading...")
+                    this@Loader.progressLbl.set(I18n.translate("load.loading", "..."))
                     Thread.sleep(500L)
                     Platform.runLater {
-                        CFAPI.load(::setProgress) { Platform.runLater { replaceWith(Packs()) } }
+                        progressPartsTotal = CFAPI.TOTAL_LOAD_PARTS
+                        CFAPI.load(::setProgress) {
+                            progressPartsDone++
+                            Platform.runLater { replaceWith(Packs()) }
+                        }
                     }
                 }
             }
             alignment = Pos.CENTER
         }
-        label(progressDetails)
+        label(this@Loader.progressDetails)
         vboxConstraints {
             maxHeight = Double.MAX_VALUE
             hgrow = Priority.ALWAYS
@@ -66,8 +75,13 @@ class Loader : View("CurseForge Mod Manager") {
 
     private fun setProgress(rb: Long, tb: Long, lbl: String) {
         Platform.runLater {
-            this.progressLbl.set("Loading $lbl...")
-            this.progressPerc.set(-rb.toDouble() / tb.toDouble() * 360.0)
+            val partAngle = -360.0 / progressPartsTotal.toDouble()
+            this.progressLbl.set(I18n.translate("load.loading", lbl))
+            if( tb > 0 ) {
+                this.progressPerc.set(progressPartsDone.toDouble() * partAngle + rb.toDouble() / tb.toDouble() * partAngle)
+            } else {
+                this.progressPerc.set(progressPartsDone.toDouble() * partAngle)
+            }
             this.progressDetails.set(if( tb > 0 ) String.format("%s / %s", rb.getStagedByteVal(), tb.getStagedByteVal()) else rb.getStagedByteVal())
         }
     }

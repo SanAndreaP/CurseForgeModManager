@@ -2,6 +2,8 @@ package de.sanandrew.apps.cursemodmgr.curseapi
 
 import com.github.kittinunf.fuel.httpGet
 import de.sanandrew.apps.cursemodmgr.GsonInst
+import de.sanandrew.apps.cursemodmgr.Loader
+import de.sanandrew.apps.cursemodmgr.util.I18n
 import de.sanandrew.apps.cursemodmgr.util.SemVer
 
 data class Game(val id: Long,
@@ -11,6 +13,7 @@ data class Game(val id: Long,
                 var versions: Array<GameVersion> = arrayOf(),
                 var modloader: Array<Modloader> = arrayOf())
 {
+
     data class CategorySection(val id: Long,
                                val name: String,
                                val packageType: Int,
@@ -50,8 +53,9 @@ data class Game(val id: Long,
     fun load(dlProgressHandler: (Long, Long, String) -> Unit, onFinish: () -> Unit) {
         "https://addons-ecs.forgesvc.net/api/v2/$slug/version"
                 .httpGet()
-                .responseProgress {rb, tb -> dlProgressHandler(rb, tb, "$name Versions")}
+                .responseProgress {rb, tb -> dlProgressHandler(rb, tb, I18n.translate("load.versions", this.name))}
                 .responseString {_, _, result ->
+                    Loader.progressPartsDone++
                     this.versions = GsonInst.fromJson(result.get(), Array<GameVersion>::class.java)
                     this.loadModLoaders(dlProgressHandler, onFinish)
                 }
@@ -60,8 +64,9 @@ data class Game(val id: Long,
     private fun loadModLoaders(dlProgressHandler: (Long, Long, String) -> Unit, onFinish: () -> Unit) {
         "https://addons-ecs.forgesvc.net/api/v2/$slug/modloader"
                 .httpGet()
-                .responseProgress {rb, tb -> dlProgressHandler(rb, tb, "$name Modloader")}
+                .responseProgress {rb, tb -> dlProgressHandler(rb, tb, I18n.translate("load.modloader", this.name))}
                 .responseString {_, _, result ->
+                    Loader.progressPartsDone++
                     this.modloader = GsonInst.fromJson(result.get(), Array<Modloader>::class.java)
                     onFinish()
                 }
@@ -80,5 +85,9 @@ data class Game(val id: Long,
 
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    companion object {
+        const val TOTAL_LOAD_PARTS = 2
     }
 }

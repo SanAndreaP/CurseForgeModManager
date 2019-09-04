@@ -26,7 +26,7 @@ dependencies {
     implementation 'com.github.kittinunf.result:result:2.2.0'
     implementation 'com.github.kittinunf.fuel:fuel:2.2.0'
     implementation 'com.google.code.gson:gson:2.8.5'
-    compile 'no.tornado:tornadofx:1.7.17'
+    implementation 'no.tornado:tornadofx:1.7.17'
 }
 
 compileKotlin {
@@ -37,11 +37,24 @@ compileKotlin {
 	}
 }
 
+String mainClazz = "de.sanandrew.apps.cursemodmgr.MainKt"
+
 idea.project.settings {
     runConfigurations {
         "MainApp"(Application) {
-            mainClass = "de.sanandrew.apps.cursemodmgr.MainKt"
+            mainClass = mainClazz
             moduleName = getProject().idea.module.name + ".main"
         }
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            "Main-Class": mainClazz
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
