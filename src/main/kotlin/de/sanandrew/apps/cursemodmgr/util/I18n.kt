@@ -1,9 +1,7 @@
 package de.sanandrew.apps.cursemodmgr.util
 
-import java.io.BufferedReader
+import de.sanandrew.apps.cursemodmgr.useResourceList
 import java.io.InputStreamReader
-import java.nio.file.Files
-import java.nio.file.Paths
 
 object I18n
 {
@@ -17,12 +15,10 @@ object I18n
             loadLang(this.STD_LANG, r)
         }
 
-        javaClass.classLoader.getResourceAsStream("lang/")?.bufferedReader()?.useLines {
-            it.forEach { file ->
-                val res = javaClass.classLoader.getResourceAsStream("lang/$file")
-                if( file.endsWith(".lang") && res != null ) {
-                    loadLang(file.substringBeforeLast('.'), res.reader())
-                }
+        useResourceList("lang/") {
+            val res = javaClass.classLoader.getResourceAsStream(it)
+            if( it.endsWith(".lang") && res != null ) {
+                loadLang(it.substringBeforeLast('.').substringAfter("lang/"), res.reader())
             }
         }
     }

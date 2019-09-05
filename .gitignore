@@ -4,3 +4,4 @@ session_data.json
 packs.json
 .gradle/
 build/
+config.json
