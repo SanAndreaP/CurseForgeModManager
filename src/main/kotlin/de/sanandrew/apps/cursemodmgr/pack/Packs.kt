@@ -16,7 +16,9 @@ import javafx.scene.input.MouseButton
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.CornerRadii
+import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.StageStyle
@@ -37,18 +39,18 @@ class Packs: View(I18n.translate("title")) {
             vbox {
                 label("+") {
                     style {
-                        fontSize = Dimension(20.0, Dimension.LinearUnits.pt)
+                        fontSize = Dimension(40.0, Dimension.LinearUnits.pt)
                     }
                     alignment = Pos.CENTER
+                    prefWidthProperty().bind((parent as VBox).widthProperty())
                 }
                 label("new pack") {
                     alignment = Pos.CENTER
+                    prefWidthProperty().bind((parent as VBox).widthProperty())
                 }
-                hgrow = Priority.ALWAYS
-                vgrow = Priority.ALWAYS
-                useMaxWidth = true
-                useMaxHeight = true
-                background = Background(BackgroundFill(Color(1.0, 1.0, 0.0, 1.0), CornerRadii.EMPTY, Insets.EMPTY))
+                alignment = Pos.CENTER
+                prefWidthProperty().bind((parent as Pane).widthProperty())
+                prefHeightProperty().bind((parent as Pane).heightProperty())
             }
             setOnMouseClicked { event ->
                 if( event.button == MouseButton.PRIMARY ) {

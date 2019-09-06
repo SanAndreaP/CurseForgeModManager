@@ -243,6 +243,3 @@ fun writeImgToBase64GZip(img: Image): Triple<Int, Int, String> {
     }
 }
 
-fun newColor(red: Int, green: Int, blue: Int, opacity: Double = 1.0): Color {
-    return Color(red.toDouble() / 255.0, green.toDouble() / 255.0, blue.toDouble() / 255.0, opacity)
-}
