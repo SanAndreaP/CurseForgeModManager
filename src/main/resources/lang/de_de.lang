@@ -8,8 +8,10 @@ load.minecraft.version=Minecraft-Versionen
 load.minecraft.modloader=Minecraft-Modloader
 
 packs=Modpakete
-packs.new=Neues Paket
-packs.edit=Paket bearbeiten
+packs.installed=Installierte Modpakete
+packs.search=Modpakete durchsuchen
+packs.new=Neues Modpaket
+packs.edit=Modpaket bearbeiten
 
 cfapi.err.cache.game=Die Spieleliste kann nicht heruntergeladen werden und es sind keine Daten im Zwischenspeicher! Dies kann durch eine instabile Verbindung oder zur Zeit nicht erreichbare Server verursacht werden. Versuche es bitte später noch einmal.
 cfapi.err.cache.minecraft.version=Die Minecraft-Versionen kann nicht heruntergeladen werden und es sind keine Daten im Zwischenspeicher! Dies kann durch eine instabile Verbindung oder zur Zeit nicht erreichbare Server verursacht werden. Versuche es bitte später noch einmal.

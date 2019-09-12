@@ -7,63 +7,25 @@ import de.sanandrew.apps.cursemodmgr.util.getImgFromBase64GZip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.control.OverrunStyle
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.Tooltip
+import javafx.scene.control.*
 import javafx.scene.effect.BoxBlur
 import javafx.scene.effect.Effect
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Background
-import javafx.scene.layout.BackgroundFill
-import javafx.scene.layout.Border
-import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
-import javafx.scene.text.Font
 import javafx.stage.StageStyle
 import tornadofx.*
 
 class Packs: View(I18n.translate("title")) {
     private val wndEffect = SimpleObjectProperty<Effect>()
-    private val mainPane = flowpane {
+    private val installedPacksPane = flowpane {
         hgap = 10.0
         vgap = 10.0
 
         paddingAll = 10.0
-
-        pane {
-            addClass("newPackPane")
-            setPrefSize(120.0, 180.0)
-            hgrow = Priority.NEVER
-            vbox {
-                label("+") {
-                    style {
-                        fontSize = Dimension(40.0, Dimension.LinearUnits.pt)
-                    }
-                    alignment = Pos.CENTER
-                    prefWidthProperty().bind((parent as VBox).widthProperty())
-                }
-                label("new pack") {
-                    alignment = Pos.CENTER
-                    prefWidthProperty().bind((parent as VBox).widthProperty())
-                }
-                alignment = Pos.CENTER
-                prefWidthProperty().bind((parent as Pane).widthProperty())
-                prefHeightProperty().bind((parent as Pane).heightProperty())
-            }
-            setOnMouseClicked { event ->
-                if( event.button == MouseButton.PRIMARY ) {
-                    val pack = openPackDialog()
-                    if (pack != null) {
-                        MinecraftModpacks.addPack(pack)
-                        MinecraftModpacks.savePacks()
-                        addNewPackPane(pack)
-                    }
-                }
-            }
-        }
     }
 
     init {
@@ -73,30 +35,58 @@ class Packs: View(I18n.translate("title")) {
     }
 
     override val root = cstWindowFrame(this, vbox {
+        hgrow = Priority.ALWAYS
+        vgrow = Priority.ALWAYS
+
         label(I18n.translate("packs")) {
             style {
                 fontSize = Dimension(15.0, Dimension.LinearUnits.pt)
             }
         }
-        scrollpane {
-            vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
-            isFitToWidth = true
+        tabpane {
+            hgrow = Priority.ALWAYS
+            vgrow = Priority.ALWAYS
+            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
-            addClass("packsArea")
-            add(mainPane)
+            lateinit var currTab: Tab
 
-            vboxConstraints {
-                hgrow = Priority.ALWAYS
-                vgrow = Priority.ALWAYS
+            tab(I18n.translate("packs.installed")) {
+                scrollpane {
+                    addClass("packsArea")
+
+                    vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+                    isFitToWidth = true
+
+                    add(installedPacksPane)
+
+                    vboxConstraints {
+                        hgrow = Priority.ALWAYS
+                        vgrow = Priority.ALWAYS
+                    }
+                }
+                setOnSelectionChanged { currTab = this }
+                currTab = this
+            }
+            tab(I18n.translate("packs.search")) {
+                setOnSelectionChanged { currTab = this }
+            }
+            tab(I18n.translate("packs.new")) {
+                setOnSelectionChanged { event ->
+                    currTab.select()
+                    val pack = openPackDialog()
+                    if (pack != null) {
+                        MinecraftModpacks.addPack(pack)
+                        MinecraftModpacks.savePacks()
+                        addNewPackPane(pack)
+                    }
+                }
             }
         }
-        hgrow = Priority.ALWAYS
-        vgrow = Priority.ALWAYS
         effectProperty().bind(wndEffect)
     }, hasMinBtn = true, hasMaxRstBtn = true)
 
     private fun addNewPackPane(pack: MinecraftModpacks.Modpack) {
-        this.mainPane.children.add(0,
+        this.installedPacksPane.children.add(0,
             region {
                 vbox {
                     addClass("packPane")

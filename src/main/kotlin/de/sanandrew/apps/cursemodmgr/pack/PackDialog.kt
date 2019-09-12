@@ -7,6 +7,7 @@ import de.sanandrew.apps.cursemodmgr.util.getCellCallback
 import de.sanandrew.apps.cursemodmgr.util.getConverter
 import de.sanandrew.apps.cursemodmgr.util.getImgFromBase64GZip
 import de.sanandrew.apps.cursemodmgr.util.writeImgToBase64GZip
+import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.transformation.FilteredList
 import javafx.geometry.HPos
@@ -23,6 +24,7 @@ import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
+import java.util.concurrent.Callable
 
 class PackDialog constructor(): Fragment("New Modpack") {
     var pack: MinecraftModpacks.Modpack? = null
@@ -33,7 +35,10 @@ class PackDialog constructor(): Fragment("New Modpack") {
     private val packLoader = SimpleObjectProperty<Game.Modloader>()
     private val packMcDir = SimpleObjectProperty<String>()
     private val packProfDir = SimpleObjectProperty<String>()
-    private val packImg = SimpleObjectProperty<Image>(stdImage)
+    private val packImg = SimpleObjectProperty<Image?>(null)
+    private val packImgDef = Bindings.createObjectBinding<Image>(Callable {
+        packImg.get() ?: stdImage
+    }, packImg)
 
     private val filteredLoaders = FilteredList<Game.Modloader>(CFAPI.Minecraft.modloader.toList().observable())
     private val errMsg = SimpleObjectProperty<String?>()
@@ -57,7 +62,7 @@ class PackDialog constructor(): Fragment("New Modpack") {
             stackpane {
                 pane {
                     setMaxSize(200.0, 200.0)
-                    imageview(packImg) {
+                    imageview(packImgDef) {
                         fitWidth = 200.0
                         fitHeight = 200.0
                         border = Border(BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii(0.0), BorderWidths(1.0)))
@@ -213,8 +218,8 @@ class PackDialog constructor(): Fragment("New Modpack") {
                 pack!!.modLoader = packLoader.value
                 pack!!.mcDirectory = getStringPropValue(packMcDir)
                 pack!!.profileDirectory = getStringPropValue(packProfDir)
-                if( packImg != stdImage ) {
-                    val (width, height, data) = writeImgToBase64GZip(packImg.value)
+                if( packImg.value != null ) {
+                    val (width, height, data) = writeImgToBase64GZip(packImg.value!!)
                     pack!!.img = MinecraftModpacks.PackImg(width, height, data)
                 }
             } else {

@@ -4,12 +4,14 @@ title=CurseForge Mod Manager
 
 load.loading=Loading %s
 load.game=game list
-load.minecraft.version=%s versions
-load.minecraft.modloader=%s Modloader
+load.minecraft.version=Minecraft versions
+load.minecraft.modloader=Minecraft Modloader
 
 packs=Modpacks
-packs.new=new pack
-packs.edit=edit pack
+packs.installed=installed modpacks
+packs.search=search modpacks
+packs.new=new modpack
+packs.edit=edit modpack
 
 cfapi.err.cache.game=Cannot fetch Game List and no cache is available! This could be due to a faulty internet connection or the servers are currently unavailable. Please try again later.
 cfapi.err.cache.minecraft.version=Cannot fetch Minecraft versions and no cache is available! This could be due to a faulty internet connection or the servers are currently unavailable. Please try again later.
