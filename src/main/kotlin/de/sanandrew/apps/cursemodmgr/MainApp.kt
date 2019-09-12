@@ -94,8 +94,8 @@ class MainApp: tornadofx.App(Loader::class) {
     }
 
     init {
-        reloadViewsOnFocus()
-        reloadStylesheetsOnFocus()
+//        reloadViewsOnFocus()
+//        reloadStylesheetsOnFocus()
 
         importStylesheet(CssMain::class)
         importStylesheet(CssWindow::class)

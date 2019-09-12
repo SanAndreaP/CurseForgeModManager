@@ -1,11 +1,13 @@
 package de.sanandrew.apps.cursemodmgr.css
 
+import javafx.scene.paint.Color
 import tornadofx.*
 
 class CssPacks: Stylesheet() {
     companion object {
         val packsArea by cssclass("packsArea")
         val packPane by cssclass("packPane")
+        val packPaneBottom by cssclass("packPaneBottom")
         val newPackPane by cssclass("newPackPane")
         val thumbPane by cssclass("thumbPane")
     }
@@ -16,16 +18,8 @@ class CssPacks: Stylesheet() {
         }
 
         packPane {
-            borderWidth += box(1.px)
-            borderRadius += box(5.px)
-            backgroundRadius += box(5.px)
-            label {
-                padding = box(3.px, 0.px, 0.px, 0.px)
-                borderWidth += box(1.px, 0.px, 0.px, 0.px)
-            }
             thumbPane {
                 padding = box(5.px)
-                backgroundRadius += box(5.px, 5.px, 0.px, 0.px)
             }
         }
     }

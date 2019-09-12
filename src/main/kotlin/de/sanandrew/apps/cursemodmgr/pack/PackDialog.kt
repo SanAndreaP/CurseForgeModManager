@@ -196,7 +196,7 @@ class PackDialog constructor(): Fragment("New Modpack") {
             }
             rowConstraints += RowConstraints(30.0)
         }
-    }, cstCloseAction = { close() })
+    }, cstCloseAction = { close() }, canResize = false, maxSize = 400.0 to 400.0)
 
     private fun getStringPropValue(sop: SimpleObjectProperty<String>): String {
         return sop.takeIf { sop.isNotNull.value }?.value ?: ""

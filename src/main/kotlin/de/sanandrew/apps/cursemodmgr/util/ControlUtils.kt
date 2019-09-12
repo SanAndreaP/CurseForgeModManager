@@ -27,9 +27,13 @@ import java.util.zip.GZIPOutputStream
 fun javafx.event.EventTarget.cstWindowFrame(view: UIComponent, content: Node, hasMinBtn: Boolean = false, hasMaxRstBtn: Boolean = false,
                                             cstCloseAction: (() -> Unit)? = null,
                                             canResize: Boolean = true,
-                                            contentPadding: Insets = Insets(5.0, 15.0, 0.0, 15.0)): javafx.scene.Parent
+                                            contentPadding: Insets = Insets(5.0, 15.0, 0.0, 15.0), maxSize: Pair<Double, Double>? = null): javafx.scene.Parent
 {
     return vbox {
+        if( maxSize != null ) {
+            setMaxSize(maxSize.first, maxSize.second)
+        }
+
         var xOffsetWindow = 0.0
         var yOffsetWindow = 0.0
 
@@ -45,14 +49,14 @@ fun javafx.event.EventTarget.cstWindowFrame(view: UIComponent, content: Node, ha
 
         hbox {
             addClass("windowHeader")
-
             minHeight = 30.0
             alignment = Pos.CENTER_RIGHT
 
             label(view.titleProperty) {
-                maxWidth = Double.MAX_VALUE
-                hgrow = Priority.ALWAYS
                 paddingLeft = 10.0
+            }
+            region {
+                hgrow = Priority.ALWAYS
             }
             button("\ue0bd") {
                 addClass("minBtn")

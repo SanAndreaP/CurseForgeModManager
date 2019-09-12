@@ -27,6 +27,8 @@ dependencies {
     implementation 'com.github.kittinunf.fuel:fuel:2.2.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'no.tornado:tornadofx:1.7.17'
+    implementation 'org.slf4j:slf4j-jdk14:1.7.5'
+    implementation 'io.github.microutils:kotlin-logging:1.7.6'
 }
 
 compileKotlin {

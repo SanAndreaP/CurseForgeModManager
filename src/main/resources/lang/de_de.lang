@@ -1,8 +1,16 @@
 langname=Deutsch (Deutschland)
 
+title=CurseForge Mod Manager
+
 load.loading=Lade %s
-load.gamelist=Spiele-Liste
-load.versions=%s Versionen
+load.game=Spieleliste
+load.minecraft.version=Minecraft-Versionen
+load.minecraft.modloader=Minecraft-Modloader
+
 packs=Modpakete
 packs.new=Neues Paket
 packs.edit=Paket bearbeiten
+
+cfapi.err.cache.game=Die Spieleliste kann nicht heruntergeladen werden und es sind keine Daten im Zwischenspeicher! Dies kann durch eine instabile Verbindung oder zur Zeit nicht erreichbare Server verursacht werden. Versuche es bitte später noch einmal.
+cfapi.err.cache.minecraft.version=Die Minecraft-Versionen kann nicht heruntergeladen werden und es sind keine Daten im Zwischenspeicher! Dies kann durch eine instabile Verbindung oder zur Zeit nicht erreichbare Server verursacht werden. Versuche es bitte später noch einmal.
+cfapi.err.cache.minecraft.modloader=Die Minecraft-Modloader kann nicht heruntergeladen werden und es sind keine Daten im Zwischenspeicher! Dies kann durch eine instabile Verbindung oder zur Zeit nicht erreichbare Server verursacht werden. Versuche es bitte später noch einmal.

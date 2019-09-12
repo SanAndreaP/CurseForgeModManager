@@ -15,6 +15,7 @@ import javafx.scene.effect.Effect
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
+import javafx.scene.layout.Border
 import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
@@ -96,67 +97,83 @@ class Packs: View(I18n.translate("title")) {
 
     private fun addNewPackPane(pack: MinecraftModpacks.Modpack) {
         this.mainPane.children.add(0,
-            vbox {
-                addClass("packPane")
-                val packTitle = SimpleObjectProperty<String>(pack.title)
-                val packImg = SimpleObjectProperty(if(pack.img != null) getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data) else null)
+            region {
+                vbox {
+                    addClass("packPane")
+                    val packTitle = SimpleObjectProperty<String>(pack.title)
+                    val packImg = SimpleObjectProperty(if(pack.img != null) getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data) else null)
 
-                setMinSize(120.0, 180.0)
-                stackpane {
-                    addClass("thumbPane")
-                    imageview(packImg) {
-                        setPrefSize(110.0, 110.0)
-                        fitWidth = 110.0
-                        fitHeight = 110.0
-                    }
-                }
-                label(packTitle) {
-                    style {
-                        alignment = Pos.CENTER
-                    }
+                    minWidth = 120.0
                     maxWidth = 120.0
-                    vgrow = Priority.ALWAYS
-                }
-                hbox {
-                    alignment = Pos.CENTER
-                    button("\ue067") {
-                        addClass("icoFont")
-                        setMinSize(25.0, 25.0)
-                        setMaxSize(25.0, 25.0)
-                        textOverrun = OverrunStyle.CLIP
-                        padding = Insets(0.0, 0.0, 1.5, 0.0)
-                        tooltip = Tooltip("Edit Pack")
+                    prefWidth = 120.0
 
-                        setOnMouseClicked {
-                            openPackDialog(pack)
-                            MinecraftModpacks.savePacks()
-                            packTitle.set(pack.title)
-                            packImg.set(if(pack.img != null) getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data) else null)
+                    stackpane {
+                        addClass("thumbPane")
+                        imageview(packImg) {
+                            setPrefSize(110.0, 110.0)
+                            fitWidth = 110.0
+                            fitHeight = 110.0
                         }
                     }
-                    button("\ue123") {
-                        addClass("icoFont")
-                        setMinSize(25.0, 25.0)
-                        setMaxSize(25.0, 25.0)
-                        textOverrun = OverrunStyle.CLIP
-                        padding = Insets(0.0, 0.0, 1.5, 0.0)
-                        tooltip = Tooltip("Delete Pack")
-                    }
-                    button("\ue0b0") {
-                        addClass("icoFont")
-                        setMinSize(25.0, 25.0)
-                        setMaxSize(25.0, 25.0)
-                        textOverrun = OverrunStyle.CLIP
-                        padding = Insets(0.0, 0.0, 1.5, 0.0)
-                        tooltip = Tooltip("Play Pack")
-                    }
-                    button("\ue114") {
-                        addClass("icoFont")
-                        setMinSize(25.0, 25.0)
-                        setMaxSize(25.0, 25.0)
-                        textOverrun = OverrunStyle.CLIP
-                        padding = Insets(0.0, 0.0, 1.5, 0.0)
-                        tooltip = Tooltip("Show/Edit Modlist")
+                    vbox {
+                        addClass("packPaneBottom")
+                        label(packTitle) {
+                            style {
+                                alignment = Pos.CENTER
+                                borderWidth += box(5.0.px)
+                                borderColor += box(Color.TRANSPARENT)
+                            }
+                            onHover {
+                                isWrapText = it
+                            }
+                            prefWidthProperty().bind((parent as VBox).widthProperty())
+                        }
+                        hbox {
+                            style {
+                                alignment = Pos.CENTER
+                                borderWidth += box(0.0.px, 0.0.px, 10.0.px, 0.0.px)
+                                borderColor += box(Color.TRANSPARENT)
+                            }
+                            button("\ue067") {
+                                addClass("icoFont")
+                                setMinSize(25.0, 25.0)
+                                setMaxSize(25.0, 25.0)
+                                textOverrun = OverrunStyle.CLIP
+                                padding = Insets(0.0, 0.0, 1.5, 0.0)
+                                tooltip = Tooltip("Edit Pack")
+
+                                setOnMouseClicked {
+                                    openPackDialog(pack)
+                                    MinecraftModpacks.savePacks()
+                                    packTitle.set(pack.title)
+                                    packImg.set(if(pack.img != null) getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data) else null)
+                                }
+                            }
+                            button("\ue123") {
+                                addClass("icoFont")
+                                setMinSize(25.0, 25.0)
+                                setMaxSize(25.0, 25.0)
+                                textOverrun = OverrunStyle.CLIP
+                                padding = Insets(0.0, 0.0, 1.5, 0.0)
+                                tooltip = Tooltip("Delete Pack")
+                            }
+                            button("\ue0b0") {
+                                addClass("icoFont")
+                                setMinSize(25.0, 25.0)
+                                setMaxSize(25.0, 25.0)
+                                textOverrun = OverrunStyle.CLIP
+                                padding = Insets(0.0, 0.0, 1.5, 0.0)
+                                tooltip = Tooltip("Play Pack")
+                            }
+                            button("\ue114") {
+                                addClass("icoFont")
+                                setMinSize(25.0, 25.0)
+                                setMaxSize(25.0, 25.0)
+                                textOverrun = OverrunStyle.CLIP
+                                padding = Insets(0.0, 0.0, 1.5, 0.0)
+                                tooltip = Tooltip("Show/Edit Modlist")
+                            }
+                        }
                     }
                 }
             }

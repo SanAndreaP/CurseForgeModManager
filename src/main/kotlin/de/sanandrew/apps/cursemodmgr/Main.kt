@@ -5,9 +5,11 @@ import com.google.gson.GsonBuilder
 import de.sanandrew.apps.cursemodmgr.util.Config
 import de.sanandrew.apps.cursemodmgr.util.I18n
 import javafx.application.Application
+import mu.KotlinLogging
 import java.net.JarURLConnection
 
 val GsonInst: Gson = GsonBuilder().serializeNulls().setPrettyPrinting().create()
+val log = KotlinLogging.logger { }
 
 fun main(args: Array<String>) {
     I18n.loadLangs()

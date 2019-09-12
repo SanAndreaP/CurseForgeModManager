@@ -11,6 +11,7 @@ import javafx.scene.paint.Stop
 import tornadofx.*
 
 abstract class CssColors: Stylesheet() {
+    // main colors
     lateinit var mainColor: Color
     lateinit var windowHeaderBottomStart: Color
     lateinit var windowHeaderBottomEnd: Color
@@ -21,6 +22,14 @@ abstract class CssColors: Stylesheet() {
     var windowBackground: Color = Color.WHITESMOKE
     var textSelected: Color = Color.WHITE
     var textSelectedBackground: Color = Color.STEELBLUE
+
+    // loading screen
+    lateinit var progressBorder: Color
+    lateinit var progressBar: Color
+
+    // pack list
+    lateinit var packBackground: Color
+    lateinit var packButtonPanel: Color
 
     val flatFocus: CssSelectionBlock
     val flat: CssSelectionBlock
@@ -96,10 +105,10 @@ abstract class CssColors: Stylesheet() {
             }
         }
         CssWindow.progressCircle {
-            stroke = mainColor.desaturate()
+            stroke = progressBorder
         }
         CssWindow.progressArc {
-            fill = mainColor
+            fill = progressBar
         }
 
 
@@ -107,17 +116,16 @@ abstract class CssColors: Stylesheet() {
             borderColor += box(mainColor)
         }
         CssPacks.packPane {
+            backgroundColor += packBackground
             and(hover) {
                 backgroundColor += buttonHoverBackground
             }
-            borderColor += box(mainColor)
-            label {
-                borderColor += box(mainColor)
-            }
         }
         CssPacks.newPackPane {
-            backgroundColor += Color.LIGHTGRAY
-            effect = DropShadow(5.0, Color.GRAY)
+            backgroundColor += packBackground
+        }
+        CssPacks.packPaneBottom {
+            backgroundColor += packButtonPanel
         }
     }
 

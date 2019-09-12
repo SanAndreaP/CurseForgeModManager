@@ -10,5 +10,7 @@ class CssLightSteelblue : CssColors() {
         this.windowHeaderTopEnd = Color.rgb(181, 205, 225)
         this.windowHeaderTopStart = Color.rgb(144, 180, 210)
         this.buttonHoverBackground = Color.rgb(236, 242, 247)
+        this.progressBorder = this.mainColor.deriveColor(0.0, 0.4, 1.0, 1.0)
+        this.progressBar = this.mainColor
     }
 }

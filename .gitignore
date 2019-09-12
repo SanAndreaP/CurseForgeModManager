@@ -5,3 +5,4 @@ packs.json
 .gradle/
 build/
 config.json
+cache/

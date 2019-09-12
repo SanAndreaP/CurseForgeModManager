@@ -1,10 +1,7 @@
 package de.sanandrew.apps.cursemodmgr.curseapi
 
-import com.github.kittinunf.fuel.httpGet
 import de.sanandrew.apps.cursemodmgr.GsonInst
 import de.sanandrew.apps.cursemodmgr.Loader
-import de.sanandrew.apps.cursemodmgr.util.I18n
-import de.sanandrew.apps.cursemodmgr.util.SemVer
 
 data class Game(val id: Long,
                 val name: String,
@@ -50,26 +47,20 @@ data class Game(val id: Long,
         }
     }
 
-    fun load(dlProgressHandler: (Long, Long, String) -> Unit, onFinish: () -> Unit) {
-        "https://addons-ecs.forgesvc.net/api/v2/$slug/version"
-                .httpGet()
-                .responseProgress {rb, tb -> dlProgressHandler(rb, tb, I18n.translate("load.versions", this.name))}
-                .responseString {_, _, result ->
-                    Loader.progressPartsDone++
-                    this.versions = GsonInst.fromJson(result.get(), Array<GameVersion>::class.java)
-                    this.loadModLoaders(dlProgressHandler, onFinish)
-                }
+    fun loadVersions(dlProgressHandler: (Long, Long, String) -> Unit, onFinish: () -> Unit) {
+        CFAPI.loadFromAPI("$slug/version", dlProgressHandler, {
+            this.versions = GsonInst.fromJson(it, Array<GameVersion>::class.java)
+            Loader.progressPartsDone++
+            this.loadModLoaders(dlProgressHandler, onFinish)
+        })
     }
 
     private fun loadModLoaders(dlProgressHandler: (Long, Long, String) -> Unit, onFinish: () -> Unit) {
-        "https://addons-ecs.forgesvc.net/api/v2/$slug/modloader"
-                .httpGet()
-                .responseProgress {rb, tb -> dlProgressHandler(rb, tb, I18n.translate("load.modloader", this.name))}
-                .responseString {_, _, result ->
-                    Loader.progressPartsDone++
-                    this.modloader = GsonInst.fromJson(result.get(), Array<Modloader>::class.java)
-                    onFinish()
-                }
+        CFAPI.loadFromAPI("$slug/modloader", dlProgressHandler, {
+            this.modloader = GsonInst.fromJson(it, Array<Modloader>::class.java)
+            Loader.progressPartsDone++
+            onFinish()
+        })
     }
 
     override fun equals(other: Any?): Boolean {
