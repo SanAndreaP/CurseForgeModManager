@@ -25,7 +25,7 @@ class Config {
         }
 
         fun loadConfig() {
-            if( Files.exists(File("./config.json").toPath()) ) {
+            if(Files.exists(File("./config.json").toPath())) {
                 val loaded = GsonInst.fromJson(FileReader("./config.json"), Config::class.java)
                 this.inst.updateConfig(loaded)
 
@@ -57,14 +57,18 @@ class Config {
     @Suppress("UNCHECKED_CAST")
     private fun updateConfig(newCfg: Config) {
         this::class.declaredMemberProperties
-                .mapNotNull { val g = it.getter.call(this)
-                              if(g is StdValue<*>) it.name to g as StdValue<Any> else null }
-                .forEach { val mo = newCfg::class.declaredMemberProperties.find { moi -> moi.name == it.first }!!.getter.call(newCfg) as StdValue<Any>
-                           it.second.set(mo.getValue()) }
+                .mapNotNull {
+                    val g = it.getter.call(this)
+                    if(g is StdValue<*>) it.name to g as StdValue<Any> else null
+                }
+                .forEach {
+                    val mo = newCfg::class.declaredMemberProperties.find { moi -> moi.name == it.first }!!.getter.call(newCfg) as StdValue<Any>
+                    it.second.set(mo.getValue())
+                }
     }
 
-    data class StdValue<T: Any>(private var value: T?, val default: T) {
-        constructor(value: T): this(value, value)
+    data class StdValue<T : Any>(private var value: T?, val default: T) {
+        constructor(value: T) : this(value, value)
 
         fun get(): T {
             return this.value ?: this.default

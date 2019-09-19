@@ -20,9 +20,9 @@ fun main(args: Array<String>) {
 
 fun useResourceList(path: String, onElem: (elem: String) -> Unit) {
     MainApp::class.java.classLoader.getResource(path)?.let { resource ->
-        if( resource.toString().startsWith("jar:") ) {
+        if(resource.toString().startsWith("jar:")) {
             val conn = resource.openConnection() as JarURLConnection
-            conn.jarFile.use { jarFile -> jarFile.entries().iterator().forEach { if( it.name.startsWith(path) ) onElem(it.name) } }
+            conn.jarFile.use { jarFile -> jarFile.entries().iterator().forEach { if(it.name.startsWith(path)) onElem(it.name) } }
         } else {
             MainApp::class.java.classLoader.getResourceAsStream(path)?.bufferedReader()?.useLines { it.forEach { file -> onElem(path + file) } }
         }

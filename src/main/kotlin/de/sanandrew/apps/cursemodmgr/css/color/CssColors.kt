@@ -10,14 +10,20 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import tornadofx.*
 
-abstract class CssColors: Stylesheet() {
+abstract class CssColors : Stylesheet() {
     // main colors
-    lateinit var mainColor: Color
+    lateinit var focusBorder: Color
+    lateinit var focusBorderShadow: Color
+    lateinit var windowBorder: Color
     lateinit var windowHeaderBottomStart: Color
     lateinit var windowHeaderBottomEnd: Color
     lateinit var windowHeaderTopEnd: Color
     lateinit var windowHeaderTopStart: Color
-    lateinit var buttonHoverBackground: Color
+    var buttonText: Color = Color.BLACK
+    var buttonTextHover: Color = Color.BLACK
+    var buttonBackground: Color = Color.DARKGRAY
+    var buttonHoverBackground: Color = Color.LIGHTGRAY
+    var errorText: Color = Color.FIREBRICK
     var text: Color = Color.BLACK
     var windowBackground: Color = Color.WHITESMOKE
     var textSelected: Color = Color.WHITE
@@ -38,8 +44,8 @@ abstract class CssColors: Stylesheet() {
         this.initColors()
 
         flatFocus = mixin {
-            effect = DropShadow(2.0, mainColor)
-            borderColor += box(mainColor)
+            effect = DropShadow(2.0, focusBorderShadow)
+            borderColor += box(focusBorder)
         }
         flat = mixin {
             and(focused) {
@@ -48,6 +54,14 @@ abstract class CssColors: Stylesheet() {
         }
 
         button {
+            +flat
+            backgroundColor += buttonBackground
+            textFill = buttonText
+            and(hover) {
+                backgroundColor += buttonHoverBackground
+            }
+        }
+        tabPane {
             +flat
         }
         textField {
@@ -77,8 +91,7 @@ abstract class CssColors: Stylesheet() {
         }
 
         CssWindow.windowBg {
-            effect = DropShadow(2.0, mainColor)
-            borderColor += box(mainColor)
+            borderColor += box(windowBorder)
         }
         CssWindow.windowContent {
             backgroundColor += windowBackground
@@ -89,7 +102,7 @@ abstract class CssColors: Stylesheet() {
                     Stop(0.4, windowHeaderTopEnd),
                     Stop(0.4, windowHeaderBottomStart),
                     Stop(1.0, windowHeaderBottomEnd))
-            borderColor += box(mainColor)
+            borderColor += box(windowBorder)
             button {
                 and(CssWindow.minBtn, CssWindow.maxBtn, CssWindow.resBtn) {
                     and(hover) {
@@ -111,10 +124,6 @@ abstract class CssColors: Stylesheet() {
             fill = progressBar
         }
 
-
-        CssPacks.packsArea {
-            borderColor += box(mainColor)
-        }
         CssPacks.packPane {
             backgroundColor += packBackground
             and(hover) {

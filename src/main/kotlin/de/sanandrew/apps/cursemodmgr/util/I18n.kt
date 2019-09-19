@@ -3,8 +3,7 @@ package de.sanandrew.apps.cursemodmgr.util
 import de.sanandrew.apps.cursemodmgr.useResourceList
 import java.io.InputStreamReader
 
-object I18n
-{
+object I18n {
     const val STD_LANG = "en_us"
 
     private val languages = HashMap<String, HashMap<String, String>>()
@@ -17,7 +16,7 @@ object I18n
 
         useResourceList("lang/") {
             val res = javaClass.classLoader.getResourceAsStream(it)
-            if( it.endsWith(".lang") && res != null ) {
+            if(it.endsWith(".lang") && res != null) {
                 loadLang(it.substringBeforeLast('.').substringAfter("lang/"), res.reader())
             }
         }
@@ -27,16 +26,16 @@ object I18n
         val kvMap = this.languages.computeIfAbsent(lang) { HashMap() }
         reader.readLines().forEach { l ->
             val kv = l.split(Regex("="), 2)
-            if( kv.size == 2 ) {
+            if(kv.size == 2) {
                 kvMap[kv[0]] = kv[1]
             }
         }
     }
 
     fun translate(key: String, vararg formatObj: Any?): String {
-        if( this.languages[currLang]?.containsKey(key) == true ) {
+        if(this.languages[currLang]?.containsKey(key) == true) {
             return this.languages[currLang]!![key]!!.format(*formatObj)
-        } else if( this.languages[this.STD_LANG]?.containsKey(key) == true ) {
+        } else if(this.languages[this.STD_LANG]?.containsKey(key) == true) {
             return this.languages[this.STD_LANG]!![key]!!.format(*formatObj)
         }
 
@@ -44,7 +43,7 @@ object I18n
     }
 
     fun setCurrentLang(lang: String?) {
-        if( lang != null && this.languages.containsKey(lang) ) {
+        if(lang != null && this.languages.containsKey(lang)) {
             this.currLang = lang
         }
     }

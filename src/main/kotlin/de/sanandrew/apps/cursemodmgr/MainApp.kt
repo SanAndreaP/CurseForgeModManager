@@ -6,17 +6,15 @@ import de.sanandrew.apps.cursemodmgr.css.CssWindow
 import de.sanandrew.apps.cursemodmgr.css.color.CssLightFirebrick
 import de.sanandrew.apps.cursemodmgr.css.color.CssLightSteelblue
 import de.sanandrew.apps.cursemodmgr.util.Config
-import de.sanandrew.apps.cursemodmgr.util.currStage
 import javafx.application.Platform
 import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import tornadofx.*
-import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 import kotlin.system.exitProcess
 
-class MainApp: tornadofx.App(Loader::class) {
+class MainApp : tornadofx.App(Loader::class) {
     companion object {
         private var currStyle = Stylesheets.FIREBRICK_L
 
@@ -27,19 +25,18 @@ class MainApp: tornadofx.App(Loader::class) {
         fun setCurrStyle(name: String) {
             try {
                 Stylesheets.valueOf(name).apply()
-            } catch( e: IllegalArgumentException ) { }
+            } catch(e: IllegalArgumentException) {
+            }
         }
 
-        fun closeApp(view: UIComponent) {
-            Config.instance.updateValues(currStage(view))
+        fun closeApp(stage: Stage) {
+            Config.instance.updateValues(stage)
 
-            view.onUndock()
             Platform.exit()
             exitProcess(0)
         }
 
-        fun maximizeApp(view: UIComponent) {
-            val stage = currStage(view)
+        fun maximizeApp(stage: Stage) {
             stage.isMaximized = true
 
             val screens = Screen.getScreensForRectangle(stage.x, stage.y, stage.x, stage.y)
@@ -53,38 +50,34 @@ class MainApp: tornadofx.App(Loader::class) {
             Config.instance.updateValues(stage)
         }
 
-        fun restoreApp(view: UIComponent) {
-            val stage = currStage(view)
+        fun restoreApp(stage: Stage) {
             stage.isMaximized = false
             stage.width = Config.instance.windowSizeX.default.toDouble()
             stage.height = Config.instance.windowSizeY.default.toDouble()
 
-            centerOnScreen(view)
+            centerOnScreen(stage)
 
             Config.instance.updateValues(stage)
         }
 
-        fun minimizeApp(view: UIComponent) {
-            currStage(view).isIconified = true
+        fun minimizeApp(stage: Stage) {
+            stage.isIconified = true
         }
 
-        fun initWindow(view: UIComponent) {
-            val stage = currStage(view)
+        fun initWindow(stage: Stage) {
             stage.isMaximized = Config.instance.isMaximized.get()
 
-            if( Config.instance.isMaximized.get() ) {
-                maximizeApp(view)
+            if(Config.instance.isMaximized.get()) {
+                maximizeApp(stage)
             } else {
                 stage.width = Config.instance.windowSizeX.get().toDouble()
                 stage.height = Config.instance.windowSizeY.get().toDouble()
 
-                centerOnScreen(view)
+                centerOnScreen(stage)
             }
         }
 
-        private fun centerOnScreen(view: UIComponent) {
-            val stage = currStage(view)
-
+        private fun centerOnScreen(stage: Stage) {
             val screens = Screen.getScreensForRectangle(stage.x, stage.y, stage.x, stage.y)
             val bounds = screens.getOrElse(0) { Screen.getPrimary() }.visualBounds
 
@@ -105,7 +98,7 @@ class MainApp: tornadofx.App(Loader::class) {
     }
 
     override fun start(stage: Stage) {
-        stage.initStyle(StageStyle.UNDECORATED)
+        stage.initStyle(StageStyle.TRANSPARENT)
 
         super.start(stage)
     }

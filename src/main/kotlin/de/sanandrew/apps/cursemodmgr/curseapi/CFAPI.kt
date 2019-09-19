@@ -28,7 +28,7 @@ object CFAPI {
     private val MINECRAFT_ID = 432L
 
     fun load(dlProgressHandler: ProgressHandler, onFinish: () -> Unit) {
-        loadFromAPI("game", dlProgressHandler,  {
+        loadFromAPI("game", dlProgressHandler, {
             val games = GsonInst.fromJson(it, Array<Game>::class.java)
             this.Minecraft = games.first { game -> game.id == MINECRAFT_ID }
             Loader.progressPartsDone++
@@ -41,7 +41,7 @@ object CFAPI {
         val tlName = name.replace("/", ".").replace("\\", ".")
         dlProgressHandler(0, -1, I18n.translate("load.$tlName"))
         val cache = this.getCache(name)
-        if( cache.first == null ) {
+        if(cache.first == null) {
             "https://addons-ecs.forgesvc.net/api/v2/$name"
                     .httpGet(parameters)
                     .responseProgress { rb, tb -> dlProgressHandler(rb, tb, I18n.translate("load.$tlName")) }
@@ -64,11 +64,11 @@ object CFAPI {
         log.debug { "grabbing timestamp for $name..." }
         val ts = "https://addons-ecs.forgesvc.net/api/v2/$name/timestamp".httpGet().responseString().third.component1()?.replace("Z\"", "")?.replace("\"", "")
         log.debug { "grabbed timestamp for $name: $ts" }
-        if( ts != null ) {
+        if(ts != null) {
             val timestp = LocalDateTime.parse(ts).toInstant(OffsetDateTime.now().offset)
-            return if( Files.exists(pth) ) {
+            return if(Files.exists(pth)) {
                 val currTS = Files.getLastModifiedTime(pth).toInstant()
-                if( currTS < timestp ) {
+                if(currTS < timestp) {
                     println("Cache for $name outdated: $currTS -> $timestp")
                     null to timestp
                 } else {
@@ -80,7 +80,7 @@ object CFAPI {
             } else {
                 null to timestp
             }
-        } else if( Files.exists(pth) ) {
+        } else if(Files.exists(pth)) {
             return Files.readAllLines(pth).joinToString("\n") to Files.getLastModifiedTime(pth).toInstant()
         }
 

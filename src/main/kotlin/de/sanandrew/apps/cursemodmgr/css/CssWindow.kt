@@ -16,9 +16,9 @@ class CssWindow : Stylesheet() {
         val progressCircle by cssclass("progressCircle")
         val progressArc by cssclass("progressArc")
     }
+
     init {
         windowBg {
-            backgroundInsets += box(0.px)
             snapToPixel = false
         }
         windowHeader {

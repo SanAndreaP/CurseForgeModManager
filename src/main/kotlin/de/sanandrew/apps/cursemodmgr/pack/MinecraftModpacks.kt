@@ -16,7 +16,7 @@ object MinecraftModpacks {
 
     fun loadPacks() {
         this.packs.clear()
-        if( Files.exists(File("./packs.json").toPath()) ) {
+        if(Files.exists(File("./packs.json").toPath())) {
             GsonInst.fromJson(FileReader("./packs.json"), Array<Modpack>::class.java).forEach { p -> addPack(p) }
         }
     }

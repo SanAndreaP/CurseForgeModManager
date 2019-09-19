@@ -8,8 +8,7 @@ data class Game(val id: Long,
                 val slug: String,
                 val categorySections: Array<CategorySection>,
                 var versions: Array<GameVersion> = arrayOf(),
-                var modloader: Array<Modloader> = arrayOf())
-{
+                var modloader: Array<Modloader> = arrayOf()) {
 
     data class CategorySection(val id: Long,
                                val name: String,
@@ -18,17 +17,17 @@ data class Game(val id: Long,
                                val initialInclusionPattern: String,
                                val extraIncludePattern: String,
                                val gameCategoryId: Long)
+
     data class GameVersion(val id: Long,
                            val gameVersionId: Long,
                            val gameVersionTypeId: Long,
                            val versionString: String,
                            val jarDownloadUrl: String,
-                           val jsonDownloadUrl: String)
-    {
+                           val jsonDownloadUrl: String) {
         override fun equals(other: Any?): Boolean {
-            if( other === this ) return true
-            if( other is String ) return this.versionString == other
-            if( other !is GameVersion ) return false
+            if(other === this) return true
+            if(other is String) return this.versionString == other
+            if(other !is GameVersion) return false
 
             return this.versionString == other.versionString
         }
@@ -37,11 +36,11 @@ data class Game(val id: Long,
             return this.versionString.hashCode()
         }
     }
+
     data class Modloader(val name: String,
                          val gameVersion: String,
                          val latest: Boolean,
-                         val recommended: Boolean)
-    {
+                         val recommended: Boolean) {
         fun getGameVersion(game: Game): GameVersion {
             return game.versions.first { ver -> ver.versionString == this.gameVersion }
         }
@@ -64,12 +63,12 @@ data class Game(val id: Long,
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        if(this === other) return true
+        if(javaClass != other?.javaClass) return false
 
         other as Game
 
-        if (id != other.id) return false
+        if(id != other.id) return false
 
         return true
     }

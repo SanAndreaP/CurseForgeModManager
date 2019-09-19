@@ -1,9 +1,8 @@
 package de.sanandrew.apps.cursemodmgr.css
 
-import javafx.scene.paint.Color
 import tornadofx.*
 
-class CssPacks: Stylesheet() {
+class CssPacks : Stylesheet() {
     companion object {
         val packsArea by cssclass("packsArea")
         val packPane by cssclass("packPane")
