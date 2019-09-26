@@ -15,7 +15,7 @@ import javafx.scene.text.Font
 import tornadofx.*
 import kotlin.concurrent.thread
 
-class Loader : View(I18n.translate("title")) {
+class Loader : View() {
     private val progressLbl = SimpleObjectProperty<String>(I18n.translate("load.loading", "..."))
     private val progressPerc = SimpleObjectProperty<Double>(0.0)
     private val progressDetails = SimpleObjectProperty<String>("")
@@ -26,53 +26,49 @@ class Loader : View(I18n.translate("title")) {
     }
 
     init {
-        MainApp.initWindow(this.primaryStage)
-
         this.primaryStage.onCloseRequest = EventHandler {
             MainApp.closeApp(this.primaryStage)
         }
     }
 
-    override val root = windowFrame(this.primaryStage, this.title) {
-        vbox {
-            label(this@Loader.progressLbl) {
-                font = Font.font(16.0)
+    override val root = vbox {
+        label(this@Loader.progressLbl) {
+            font = Font.font(16.0)
+        }
+        group {
+            circle {
+                addClass("progressCircle")
+                radius = 22.0
+                fill = Color.WHITE
+                strokeWidth = 2.0
             }
-            group {
-                circle {
-                    addClass("progressCircle")
-                    radius = 22.0
-                    fill = Color.WHITE
-                    strokeWidth = 2.0
-                }
-                arc {
-                    addClass("progressArc")
-                    startAngle = 90.0
-                    lengthProperty().bind(this@Loader.progressPerc)
-                    radiusX = 20.0
-                    radiusY = 20.0
-                    type = ArcType.ROUND
-                    thread {
-                        this@Loader.progressLbl.set(I18n.translate("load.loading", "..."))
-                        Thread.sleep(500L)
-                        Platform.runLater {
-                            progressPartsTotal = CFAPI.TOTAL_LOAD_PARTS
-                            CFAPI.load(::setProgress) {
-                                progressPartsDone++
-                                Platform.runLater { replaceWith(Packs()) }
-                            }
+            arc {
+                addClass("progressArc")
+                startAngle = 90.0
+                lengthProperty().bind(this@Loader.progressPerc)
+                radiusX = 20.0
+                radiusY = 20.0
+                type = ArcType.ROUND
+                thread {
+                    this@Loader.progressLbl.set(I18n.translate("load.loading", "..."))
+                    Thread.sleep(500L)
+                    Platform.runLater {
+                        progressPartsTotal = CFAPI.TOTAL_LOAD_PARTS
+                        CFAPI.load(::setProgress) {
+                            progressPartsDone++
+                            Platform.runLater { this@Loader.replaceWith(Packs()) }
                         }
                     }
                 }
-                alignment = Pos.CENTER
             }
-            label(this@Loader.progressDetails)
-            vboxConstraints {
-                maxHeight = Double.MAX_VALUE
-                hgrow = Priority.ALWAYS
-                maxWidth = Double.MAX_VALUE
-                vgrow = Priority.ALWAYS
-            }
+            alignment = Pos.CENTER
+        }
+        label(this@Loader.progressDetails)
+        vboxConstraints {
+            maxHeight = Double.MAX_VALUE
+            hgrow = Priority.ALWAYS
+            maxWidth = Double.MAX_VALUE
+            vgrow = Priority.ALWAYS
         }
     }
 

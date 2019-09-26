@@ -2,11 +2,7 @@ package de.sanandrew.apps.cursemodmgr.pack
 
 import de.sanandrew.apps.cursemodmgr.curseapi.CFAPI
 import de.sanandrew.apps.cursemodmgr.curseapi.Game
-import de.sanandrew.apps.cursemodmgr.util.getCellCallback
-import de.sanandrew.apps.cursemodmgr.util.getConverter
-import de.sanandrew.apps.cursemodmgr.util.getImgFromBase64GZip
-import de.sanandrew.apps.cursemodmgr.util.windowFrame
-import de.sanandrew.apps.cursemodmgr.util.writeImgToBase64GZip
+import de.sanandrew.apps.cursemodmgr.util.*
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.transformation.FilteredList
@@ -15,13 +11,7 @@ import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.effect.BoxBlur
 import javafx.scene.image.Image
-import javafx.scene.layout.Border
-import javafx.scene.layout.BorderStroke
-import javafx.scene.layout.BorderStrokeStyle
-import javafx.scene.layout.BorderWidths
-import javafx.scene.layout.ColumnConstraints
-import javafx.scene.layout.CornerRadii
-import javafx.scene.layout.RowConstraints
+import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import javafx.stage.StageStyle
@@ -49,8 +39,7 @@ class PackDialog constructor() : Fragment("New Modpack") {
     private val packTitle = SimpleObjectProperty<String>()
     private val packGameVer = SimpleObjectProperty<Game.GameVersion>()
     private val packLoader = SimpleObjectProperty<Game.Modloader>()
-    private val packMcDir = SimpleObjectProperty<String>()
-    private val packProfDir = SimpleObjectProperty<String>()
+    private val packDir = SimpleObjectProperty<String>()
     private val packImg = SimpleObjectProperty<Image?>(null)
     private val packImgDef = Bindings.createObjectBinding<Image>(Callable {
         packImg.get() ?: stdImage
@@ -66,19 +55,23 @@ class PackDialog constructor() : Fragment("New Modpack") {
         this.packTitle.set(pack.title)
         this.packGameVer.set(pack.modLoader.getGameVersion(CFAPI.Minecraft))
         this.packLoader.set(pack.modLoader)
-        this.packMcDir.set(pack.mcDirectory)
-        this.packProfDir.set(pack.profileDirectory)
+        this.packDir.set(pack.directory)
         if(pack.img != null) {
             this.packImg.set(getImgFromBase64GZip(pack.img!!.width, pack.img!!.height, pack.img!!.data))
         }
     }
 
-    override val root = windowFrame(this.primaryStage, this.title) {
+    private val frame = windowFrame({this.currentStage ?: this.primaryStage}, this.title) {
         onClosing {
             close()
             false
         }
+
+        canResize = false
+        canMinimize = false
+
         gridpane {
+            paddingAll = 15.0
             row {
                 stackpane {
                     pane {
@@ -151,38 +144,18 @@ class PackDialog constructor() : Fragment("New Modpack") {
                 rowConstraints += RowConstraints(30.0)
             }
             row {
-                label("Minecraft Directory")
-                textfield(packMcDir)
-                button("Choose...") {
-                    action {
-                        val dc = javafx.stage.DirectoryChooser()
-                        dc.title = "Choose your Minecraft directory..."
-                        if(getStringPropValue(packMcDir) != "") {
-                            dc.initialDirectory = File(packMcDir.value)
-                        }
-                        val res: File? = dc.showDialog(currentWindow)
-                        if(res != null) {
-                            packMcDir.set(res.absolutePath)
-                        }
-                    }
-                }
-                rowConstraints += RowConstraints(30.0)
-            }
-            row {
                 label("Profile Directory")
-                textfield(packProfDir)
+                textfield(packDir)
                 button("Choose...") {
                     action {
                         val dc = javafx.stage.DirectoryChooser()
                         dc.title = "Choose your Profile directory..."
-                        if(getStringPropValue(packProfDir) != "") {
-                            dc.initialDirectory = File(packProfDir.value)
-                        } else if(getStringPropValue(packMcDir) != "") {
-                            dc.initialDirectory = File(packMcDir.value)
+                        if(getStringPropValue(packDir) != "") {
+                            dc.initialDirectory = File(packDir.value)
                         }
                         val res: File? = dc.showDialog(currentWindow)
                         if(res != null) {
-                            packProfDir.set(res.absolutePath)
+                            packDir.set(res.absolutePath)
                         }
                     }
                 }
@@ -224,6 +197,12 @@ class PackDialog constructor() : Fragment("New Modpack") {
             }
         }
     }
+    override val root = this.frame
+
+    override fun onBeforeShow() {
+        super.onBeforeShow()
+        this.frame.initialize()
+    }
 
     private fun getStringPropValue(sop: SimpleObjectProperty<String>): String {
         return sop.takeIf { sop.isNotNull.value }?.value ?: ""
@@ -238,14 +217,13 @@ class PackDialog constructor() : Fragment("New Modpack") {
             if(pack != null) {
                 pack!!.title = packTitle.value
                 pack!!.modLoader = packLoader.value
-                pack!!.mcDirectory = getStringPropValue(packMcDir)
-                pack!!.profileDirectory = getStringPropValue(packProfDir)
+                pack!!.directory = getStringPropValue(packDir)
                 if(packImg.value != null) {
                     val (width, height, data) = writeImgToBase64GZip(packImg.value!!)
                     pack!!.img = MinecraftModpacks.PackImg(width, height, data)
                 }
             } else {
-                pack = MinecraftModpacks.Modpack(packTitle.value, packLoader.value, getStringPropValue(packMcDir), getStringPropValue(packProfDir), null)
+                pack = MinecraftModpacks.Modpack(packTitle.value, packLoader.value, getStringPropValue(packDir), null)
             }
             close()
         }

@@ -1,66 +1,124 @@
 package de.sanandrew.apps.cursemodmgr.util
 
-import de.sanandrew.apps.cursemodmgr.MainApp
 import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.ObservableList
-import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Cursor
-import javafx.scene.Node
 import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
-import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import javafx.stage.Screen
 import javafx.stage.Stage
 import tornadofx.*
 
-class WindowFrame(stage: Stage, title: String): VBox()
+@Suppress("unused", "MemberVisibilityCanBePrivate")
+class WindowFrame(val stage: () -> Stage, title: String): VBox()
 {
-    private var canMinimize: Boolean = true
-    fun setMinimizable(canMinimize: Boolean) {
-        this.canMinimize = canMinimize
-    }
+    private val showRestored = SimpleObjectProperty(false)
+    private val showMaximized = SimpleObjectProperty(true)
+    private val showMinimized = SimpleObjectProperty(true)
+    private val showClose = SimpleObjectProperty(true)
 
-    private var canResize: Boolean = true
-    fun setResizable(canResize: Boolean) {
-        this.canResize = canResize
-    }
-
-    private var canClose: Boolean = true
-    fun setCloseable(canClose: Boolean) {
-        this.canClose = canClose
-    }
+    var canMinimize: Boolean = true
+    var canResize: Boolean = true
+    var canClose: Boolean = true
 
     private var onClosing: () -> Boolean = { true }
     fun onClosing(onClosing: () -> Boolean) {
         this.onClosing = onClosing
     }
 
-    private var contentPadding: Insets = insets(0)
-    fun setContentPadding(padding: Insets) {
-        this.contentPadding = padding
+    private var onResizing: (newLocation: Pair<Double, Double>, newSize: Pair<Double, Double>) -> Boolean = { _, _ -> true }
+    fun onResizing(onResizing: (newLocation: Pair<Double, Double>, newSize: Pair<Double, Double>) -> Boolean) {
+        this.onResizing = onResizing
     }
 
-    val contentBox: HBox
+    private var onResized: () -> Unit = { }
+    fun onResized(onResized: () -> Unit) {
+        this.onResized = onResized
+    }
 
-//    operator fun plusAssign(child: UIComponent) {
-//        this.contentBox += child
-//    }
+    private var prevX: Double? = null
+    private var prevY: Double? = null
+    private var prevWidth: Double? = null
+    private var prevHeight: Double? = null
+    fun maximize() {
+        val s = this.stage()
 
-    private var initFinished = false
-    override fun getChildren(): ObservableList<Node> {
-        return if(initFinished) this.contentBox.children else super.getChildren()
+        val screens = Screen.getScreensForRectangle(s.x, s.y, s.x, s.y)
+        val bounds = screens.getOrElse(0) { Screen.getPrimary() }.visualBounds
+
+        if( !this.onResizing(bounds.minX to bounds.maxX, bounds.width to bounds.height) ) {
+            return
+        }
+
+        prevX = s.x
+        prevY = s.y
+        prevWidth = s.width
+        prevHeight = s.height
+
+        s.isMaximized = true
+
+        s.x = bounds.minX
+        s.y = bounds.minY
+        s.width = bounds.width
+        s.height = bounds.height
+
+        this.onResized()
+    }
+    fun restore() {
+        if( this.prevX == null || this.prevY == null || this.prevWidth == null || this.prevHeight == null ) {
+            return
+        }
+
+        if( !this.onResizing(this.prevX!! to this.prevY!!, this.prevWidth!! to this.prevHeight!!) ) {
+            return
+        }
+
+        val s = this.stage()
+
+        s.isMaximized = false
+
+        s.x = this.prevX!!
+        s.y = this.prevY!!
+        s.width = this.prevWidth!!
+        s.height = this.prevHeight!!
+
+        this.onResized()
+    }
+    fun minimize() {
+        this.stage().isIconified = true
+    }
+    fun initSize(w: Double, h: Double) {
+        val s = this.stage()
+
+        s.width = w
+        s.height = h
+
+        this.centerOnScreen()
+    }
+    fun centerOnScreen() {
+        val s = this.stage()
+
+        val screens = Screen.getScreensForRectangle(s.x, s.y, s.x, s.y)
+        val bounds = screens.getOrElse(0) { Screen.getPrimary() }.visualBounds
+
+        s.x = (bounds.width - s.width) / 2.0
+        s.y = (bounds.height - s.height) / 3.0
+    }
+
+    fun initialize() {
+        val s = this.stage()
+
+        this.showRestored.set(s.isMaximized && this.canResize)
+        this.showMaximized.set(!s.isMaximized && this.canResize)
+        this.showMinimized.set(this.canMinimize)
+        this.showClose.set(this.canClose)
     }
 
     init {
         var xOffsetWindow = 0.0
         var yOffsetWindow = 0.0
-
-        val showRestored = SimpleObjectProperty(stage.isMaximized && canResize)
-        val showMaximized = SimpleObjectProperty(!stage.isMaximized && canResize)
-        val showMinimized = SimpleObjectProperty(canMinimize)
-        val showClose = SimpleObjectProperty(canClose)
 
         var dragCursor = Cursor.DEFAULT
 
@@ -87,7 +145,7 @@ class WindowFrame(stage: Stage, title: String): VBox()
                 managedProperty().bind(showMinimized)
                 action {
                     if(dragCursor == Cursor.DEFAULT) {
-                        stage.isIconified = true
+                        stage().isIconified = true
                     }
                 }
             }
@@ -99,7 +157,7 @@ class WindowFrame(stage: Stage, title: String): VBox()
                 managedProperty().bind(showRestored)
                 action {
                     if(dragCursor == Cursor.DEFAULT) {
-                        MainApp.restoreApp(stage)
+                        restore()
                         showRestored.set(false)
                         showMaximized.set(true)
                     }
@@ -113,7 +171,7 @@ class WindowFrame(stage: Stage, title: String): VBox()
                 managedProperty().bind(showMaximized)
                 action {
                     if(dragCursor == Cursor.DEFAULT) {
-                        MainApp.maximizeApp(stage)
+                        maximize()
                         showRestored.set(true)
                         showMaximized.set(false)
                     }
@@ -128,48 +186,42 @@ class WindowFrame(stage: Stage, title: String): VBox()
                 action {
                     if(dragCursor == Cursor.DEFAULT) {
                         if(onClosing()) {
-                            MainApp.closeApp(stage)
+                            stage().close()
                         }
                     }
                 }
             }
             setOnMouseDragged { event ->
-                if(dragCursor == Cursor.DEFAULT && !stage.isMaximized) {
-                    stage.x = event.screenX + xOffsetWindow
-                    stage.y = event.screenY + yOffsetWindow
-
-                    Config.instance.updateValues(stage)
+                val s = stage()
+                if(dragCursor == Cursor.DEFAULT && !s.isMaximized) {
+                    s.x = event.screenX + xOffsetWindow
+                    s.y = event.screenY + yOffsetWindow
                 }
             }
             setOnMouseClicked { event ->
                 if(event.button == MouseButton.PRIMARY && event.clickCount == 2 && canResize) {
                     when {
-                        stage.isMaximized -> MainApp.restoreApp(stage)
-                        else -> MainApp.maximizeApp(stage)
+                        stage().isMaximized -> restore()
+                        else -> maximize()
                     }
                 }
             }
         }
-        this.contentBox = hbox {
-            hgrow = Priority.ALWAYS
-            vgrow = Priority.ALWAYS
-            padding = contentPadding
-
-            addClass("windowContent")
-        }
         setOnMousePressed { event ->
-            if(!stage.isMaximized) {
-                xOffsetWindow = stage.x - event.screenX
-                yOffsetWindow = stage.y - event.screenY
+            val s = stage()
+            if(!s.isMaximized) {
+                xOffsetWindow = s.x - event.screenX
+                yOffsetWindow = s.y - event.screenY
             }
         }
         addEventFilter(MouseEvent.MOUSE_DRAGGED) { event ->
-            if(!stage.isMaximized && canResize) {
+            val s = stage()
+            if(!s.isMaximized && canResize) {
 //                Platform.runLater {
                 val curX = event.screenX + xOffsetWindow
                 val curY = event.screenY + yOffsetWindow
-                var newLoc: Pair<Double, Double> = stage.x to stage.y
-                var newSize: Pair<Double, Double> = stage.width to stage.height
+                var newLoc: Pair<Double, Double> = s.x to s.y
+                var newSize: Pair<Double, Double> = s.width to s.height
                 var update = false
                 if(dragCursor == Cursor.N_RESIZE || dragCursor == Cursor.NE_RESIZE || dragCursor == Cursor.NW_RESIZE) {
                     newSize = newSize.copy(second = newSize.second + newLoc.second - curY)
@@ -192,44 +244,42 @@ class WindowFrame(stage: Stage, title: String): VBox()
                 }
 
                 if(update) {
-//                        val root = stage.scene.root
-//                        stage.scene = null
-//                        val newScene = Scene(root, newSize.first, newSize.second)
-//                        stage.scene = newScene
-                    stage.width = newSize.first
-                    stage.height = newSize.second
-                    stage.x = newLoc.first
-                    stage.y = newLoc.second
-                    stage.scene.reloadStylesheets()
+                    if(!onResizing(newLoc, newSize)) {
+                        return@addEventFilter
+                    }
 
-                    Config.instance.updateValues(stage)
+                    s.width = newSize.first
+                    s.height = newSize.second
+                    s.x = newLoc.first
+                    s.y = newLoc.second
+                    s.scene.reloadStylesheets()
+
+                    onResized()
 
                     event.consume()
                 }
-//                }
             }
         }
         addEventFilter(MouseEvent.MOUSE_MOVED) { event ->
+            val s = stage()
             val frame = 3.0
             when {
-                stage.isMaximized || !canResize -> stage.scene.cursor = Cursor.DEFAULT
+                s.isMaximized || !canResize -> s.scene.cursor = Cursor.DEFAULT
                 event.x <= frame -> when {
-                    event.y <= frame -> stage.scene.cursor = Cursor.NW_RESIZE
-                    event.y >= stage.height - frame -> stage.scene.cursor = Cursor.SW_RESIZE
-                    else -> stage.scene.cursor = Cursor.W_RESIZE
+                    event.y <= frame -> s.scene.cursor = Cursor.NW_RESIZE
+                    event.y >= s.height - frame -> s.scene.cursor = Cursor.SW_RESIZE
+                    else -> s.scene.cursor = Cursor.W_RESIZE
                 }
-                event.x >= stage.width - frame -> when {
-                    event.y <= frame -> stage.scene.cursor = Cursor.NE_RESIZE
-                    event.y >= stage.height - frame -> stage.scene.cursor = Cursor.SE_RESIZE
-                    else -> stage.scene.cursor = Cursor.E_RESIZE
+                event.x >= s.width - frame -> when {
+                    event.y <= frame -> s.scene.cursor = Cursor.NE_RESIZE
+                    event.y >= s.height - frame -> s.scene.cursor = Cursor.SE_RESIZE
+                    else -> s.scene.cursor = Cursor.E_RESIZE
                 }
-                event.y <= frame -> stage.scene.cursor = Cursor.N_RESIZE
-                event.y >= stage.height - frame -> stage.scene.cursor = Cursor.S_RESIZE
-                else -> stage.scene.cursor = Cursor.DEFAULT
+                event.y <= frame -> s.scene.cursor = Cursor.N_RESIZE
+                event.y >= s.height - frame -> s.scene.cursor = Cursor.S_RESIZE
+                else -> s.scene.cursor = Cursor.DEFAULT
             }
-            dragCursor = stage.scene.cursor
+            dragCursor = s.scene.cursor
         }
-
-        this.initFinished = true
     }
 }

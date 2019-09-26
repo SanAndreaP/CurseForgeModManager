@@ -47,11 +47,7 @@ abstract class CssColors : Stylesheet() {
             effect = DropShadow(2.0, focusBorderShadow)
             borderColor += box(focusBorder)
         }
-        flat = mixin {
-            and(focused) {
-                +flatFocus
-            }
-        }
+        flat = mixin({})
 
         button {
             +flat

@@ -10,7 +10,7 @@ import java.nio.file.Files
 
 object MinecraftModpacks {
     data class PackImg(var width: Int, var height: Int, var data: String)
-    data class Modpack(var title: String, var modLoader: Game.Modloader, var mcDirectory: String, var profileDirectory: String, var img: PackImg?)
+    data class Modpack(var title: String, var modLoader: Game.Modloader, var directory: String, var img: PackImg?)
 
     private val packs = ArrayList<Modpack>()
 

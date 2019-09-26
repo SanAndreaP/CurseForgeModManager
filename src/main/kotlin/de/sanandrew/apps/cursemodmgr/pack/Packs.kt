@@ -19,7 +19,6 @@ class Packs : View(I18n.translate("title")) {
     }
 
     init {
-        MainApp.initWindow(this.primaryStage)
         Platform.runLater {
             MinecraftModpacks.loadPacks()
             MinecraftModpacks.getPacks().forEach(this::addNewPackPane)
@@ -32,11 +31,6 @@ class Packs : View(I18n.translate("title")) {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
 
-//        label(I18n.translate("packs")) {
-//            style {
-//                fontSize = Dimension(15.0, Dimension.LinearUnits.pt)
-//            }
-//        }
         tabpane {
             hgrow = Priority.ALWAYS
             vgrow = Priority.ALWAYS
@@ -77,7 +71,7 @@ class Packs : View(I18n.translate("title")) {
             }
         }
     }
-    override val root = windowFrame(this.primaryStage, this.title) { main }
+    override val root = main
 
     private fun addNewPackPane(pack: MinecraftModpacks.Modpack) {
         this.installedPacksPane.children.add(0, PackPane(pack, this.main))

@@ -1,33 +1,23 @@
 package de.sanandrew.apps.cursemodmgr.util
 
-import de.sanandrew.apps.cursemodmgr.MainApp
-import javafx.application.Platform
-import javafx.beans.property.SimpleObjectProperty
-import javafx.geometry.Insets
-import javafx.geometry.Pos
-import javafx.scene.Cursor
-import javafx.scene.Node
-import javafx.scene.Scene
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import javafx.scene.image.Image
 import javafx.scene.image.PixelFormat
 import javafx.scene.image.WritableImage
-import javafx.scene.input.MouseButton
-import javafx.scene.input.MouseEvent
-import javafx.scene.layout.Priority
 import javafx.stage.Stage
 import javafx.util.Callback
 import javafx.util.StringConverter
 import tornadofx.*
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.util.Base64
+import java.util.*
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
-fun javafx.event.EventTarget.windowFrame(stage: Stage, title: String, op: WindowFrame.() -> Unit = {}): WindowFrame {
+fun javafx.event.EventTarget.windowFrame(stage: () -> Stage, title: String, op: WindowFrame.() -> Unit = {}): WindowFrame {
     return WindowFrame(stage, title).apply {
+//        this.initContentFaze()
         op(this)
     }
 }

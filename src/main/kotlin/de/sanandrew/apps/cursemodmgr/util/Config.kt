@@ -44,8 +44,10 @@ class Config {
     fun updateValues(stage: Stage? = null) {
         stage?.let {
             this.isMaximized.set(it.isMaximized)
-            this.windowSizeX.set(it.width.toInt())
-            this.windowSizeY.set(it.height.toInt())
+            if( !it.isMaximized ) {
+                this.windowSizeX.set(it.width.toInt())
+                this.windowSizeY.set(it.height.toInt())
+            }
         }
 
         this.lang.set(I18n.getCurrentLang())
