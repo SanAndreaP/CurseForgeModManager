@@ -8,6 +8,7 @@ import tornadofx.*
 class CssMain : Stylesheet() {
     companion object {
         val icoFont by cssclass("icoFont")
+        val errorText by cssclass("errorText")
 
         val fontJosefinR: Font? = CssMain::class.java.getResourceAsStream("/fonts/JosefinSans-Regular.ttf").use { Font.loadFont(it, 10.0) }
         val fontJosefinB: Font? = CssMain::class.java.getResourceAsStream("/fonts/JosefinSans-Bold.ttf").use { Font.loadFont(it, 10.0) }
@@ -30,6 +31,12 @@ class CssMain : Stylesheet() {
                 effect = DropShadow(0.0, Color.TRANSPARENT)
             }
         }
+        val flatInput = mixin {
+            +flat
+            and(focused) {
+                effect = javafx.scene.effect.InnerShadow(5.0, Color.RED)
+            }
+        }
     }
 
     init {
@@ -37,10 +44,10 @@ class CssMain : Stylesheet() {
             +flat
         }
         textField {
-            +flat
+            +flatInput
         }
         comboBox {
-            +flat
+            +flatInput
         }
         imageView {
             +flat
@@ -49,6 +56,11 @@ class CssMain : Stylesheet() {
             +flatFrameless
             box {
                 +flat
+            }
+            and(focused) {
+                box {
+                    effect = javafx.scene.effect.InnerShadow(5.0, Color.RED)
+                }
             }
         }
         scrollPane {

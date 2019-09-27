@@ -1,5 +1,6 @@
 package de.sanandrew.apps.cursemodmgr.css.color
 
+import de.sanandrew.apps.cursemodmgr.css.CssMain
 import de.sanandrew.apps.cursemodmgr.css.CssPacks
 import de.sanandrew.apps.cursemodmgr.css.CssWindow
 import javafx.scene.effect.BlurType
@@ -84,6 +85,10 @@ abstract class CssColors : Stylesheet() {
                     textFill = textSelected
                 }
             }
+        }
+
+        CssMain.errorText {
+            textFill = errorText
         }
 
         CssWindow.windowBg {
