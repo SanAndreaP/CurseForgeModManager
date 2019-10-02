@@ -2,7 +2,7 @@ package de.sanandrew.apps.cursemodmgr.curseapi
 
 import com.github.kittinunf.fuel.httpGet
 import de.sanandrew.apps.cursemodmgr.GsonInst
-import de.sanandrew.apps.cursemodmgr.Loader
+import de.sanandrew.apps.cursemodmgr.main.Loader
 import de.sanandrew.apps.cursemodmgr.log
 import de.sanandrew.apps.cursemodmgr.util.I18n
 import javafx.application.Platform

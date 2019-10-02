@@ -1,8 +1,6 @@
 package de.sanandrew.apps.cursemodmgr.pack
 
-import de.sanandrew.apps.cursemodmgr.MainApp
 import de.sanandrew.apps.cursemodmgr.util.I18n
-import de.sanandrew.apps.cursemodmgr.util.windowFrame
 import javafx.application.Platform
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.Tab
@@ -61,7 +59,7 @@ class Packs : View(I18n.translate("title")) {
             tab(I18n.translate("packs.new")) {
                 setOnSelectionChanged {
                     currTab.select()
-                    val pack = PackDialog.openPackDialog(parent = mainInner)
+                    val pack = PackDialog.openDialog(parent = mainInner)
                     if(pack != null) {
                         MinecraftModpacks.addPack(pack)
                         MinecraftModpacks.savePacks()

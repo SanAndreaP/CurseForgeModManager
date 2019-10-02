@@ -1,9 +1,9 @@
-package de.sanandrew.apps.cursemodmgr
+package de.sanandrew.apps.cursemodmgr.main
 
+import de.sanandrew.apps.cursemodmgr.MainApp
 import de.sanandrew.apps.cursemodmgr.curseapi.CFAPI
 import de.sanandrew.apps.cursemodmgr.pack.Packs
 import de.sanandrew.apps.cursemodmgr.util.I18n
-import de.sanandrew.apps.cursemodmgr.util.windowFrame
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler

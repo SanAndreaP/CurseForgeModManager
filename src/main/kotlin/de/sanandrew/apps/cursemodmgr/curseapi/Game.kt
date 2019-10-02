@@ -1,7 +1,7 @@
 package de.sanandrew.apps.cursemodmgr.curseapi
 
 import de.sanandrew.apps.cursemodmgr.GsonInst
-import de.sanandrew.apps.cursemodmgr.Loader
+import de.sanandrew.apps.cursemodmgr.main.Loader
 
 data class Game(val id: Long,
                 val name: String,

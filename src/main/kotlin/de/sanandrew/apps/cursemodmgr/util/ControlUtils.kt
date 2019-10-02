@@ -8,23 +8,16 @@ import javafx.scene.image.WritableImage
 import javafx.stage.Stage
 import javafx.util.Callback
 import javafx.util.StringConverter
-import tornadofx.*
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
-fun javafx.event.EventTarget.windowFrame(stage: () -> Stage, title: String, op: WindowFrame.() -> Unit = {}): WindowFrame {
+fun windowFrame(stage: () -> Stage, title: String, op: WindowFrame.() -> Unit = {}): WindowFrame {
     return WindowFrame(stage, title).apply {
-//        this.initContentFaze()
         op(this)
     }
-}
-
-fun currStage(view: UIComponent): Stage {
-    @Suppress("SENSELESS_COMPARISON")
-    return view.modalStage ?: if(view.root != null) view.root.scene?.window as Stage else null ?: view.primaryStage
 }
 
 fun <T> getConverter(result: (obj: T) -> String): StringConverter<T> {

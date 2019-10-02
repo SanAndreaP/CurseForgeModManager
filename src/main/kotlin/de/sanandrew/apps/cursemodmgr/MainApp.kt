@@ -1,10 +1,11 @@
 package de.sanandrew.apps.cursemodmgr
 
-import de.sanandrew.apps.cursemodmgr.css.CssMain
+import de.sanandrew.apps.cursemodmgr.css.CssDef
 import de.sanandrew.apps.cursemodmgr.css.CssPacks
 import de.sanandrew.apps.cursemodmgr.css.CssWindow
 import de.sanandrew.apps.cursemodmgr.css.color.CssLightFirebrick
 import de.sanandrew.apps.cursemodmgr.css.color.CssLightSteelblue
+import de.sanandrew.apps.cursemodmgr.main.MainWindow
 import de.sanandrew.apps.cursemodmgr.util.Config
 import javafx.application.Platform
 import javafx.stage.Stage
@@ -37,7 +38,7 @@ class MainApp : tornadofx.App(MainWindow::class) {
     }
 
     init {
-        importStylesheet(CssMain::class)
+        importStylesheet(CssDef::class)
         importStylesheet(CssWindow::class)
         importStylesheet(CssPacks::class)
 

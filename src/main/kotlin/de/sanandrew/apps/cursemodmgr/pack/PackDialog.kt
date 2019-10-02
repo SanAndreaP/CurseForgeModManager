@@ -17,11 +17,13 @@ import javafx.stage.FileChooser
 import javafx.stage.StageStyle
 import tornadofx.*
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.Callable
 
-class PackDialog constructor() : Fragment("New Modpack") {
+class PackDialog() : Fragment("New Modpack") {
     companion object {
-        fun openPackDialog(pack: MinecraftModpacks.Modpack? = null, parent: Node): MinecraftModpacks.Modpack? {
+        fun openDialog(pack: MinecraftModpacks.Modpack? = null, parent: Node): MinecraftModpacks.Modpack? {
             parent.effect = BoxBlur(5.0, 5.0, 3)
 
             val md = if(pack != null) PackDialog(pack) else PackDialog()
@@ -71,7 +73,9 @@ class PackDialog constructor() : Fragment("New Modpack") {
         canMinimize = false
 
         gridpane {
-            paddingAll = 15.0
+            padding = insets(15.0)
+            hgap = 5.0
+            vgap = 5.0
             row {
                 stackpane {
                     pane {
@@ -150,7 +154,7 @@ class PackDialog constructor() : Fragment("New Modpack") {
                     action {
                         val dc = javafx.stage.DirectoryChooser()
                         dc.title = "Choose your Profile directory..."
-                        if(getStringPropValue(packDir) != "") {
+                        if(getStringPropValue(packDir) != "" && Files.isDirectory(Paths.get(packDir.get()))) {
                             dc.initialDirectory = File(packDir.value)
                         }
                         val res: File? = dc.showDialog(currentWindow)
